@@ -3,8 +3,6 @@
 
 from Commands.Keys import Button, Direction, Stick
 from Commands.PythonCommandBase import PythonCommand
-
-
 # Auto league
 # 自動リーグ周回(画像認識なし)
 class AutoLeague(PythonCommand):

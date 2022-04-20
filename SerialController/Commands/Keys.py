@@ -64,10 +64,9 @@ max = 255
 class SendFormat:
     def __init__(self):
 
-        self._logger = getLogger(__name__)
-        self._logger.addHandler(NullHandler())
-        self._logger.setLevel(DEBUG)
-        self._logger.propagate = True
+        self.logger = getLogger(__name__)
+        self.logger.addHandler(NullHandler())
+        self.logger.propagate = True
 
         # This format structure needs to be the same as the one written in Joystick.c
         self.format = OrderedDict([
@@ -82,6 +81,7 @@ class SendFormat:
         self.L_stick_changed = False
         self.R_stick_changed = False
         self.Hat_pos = Hat.CENTER
+        self.state = "0 8 0 0 0 0"
 
     def setButton(self, btns):
         for btn in btns:
@@ -192,10 +192,9 @@ class SendFormat:
 class Direction:
     def __init__(self, stick, angle, magnification=1.0, isDegree=True, showName=None):
 
-        self._logger = getLogger(__name__)
-        self._logger.addHandler(NullHandler())
-        self._logger.setLevel(DEBUG)
-        self._logger.propagate = True
+        self.logger = getLogger(__name__)
+        self.logger.addHandler(NullHandler())
+        self.logger.propagate = True
 
         self.stick = stick
         self.angle_for_show = angle
@@ -212,7 +211,7 @@ class Direction:
             self.x = angle[0]
             self.y = angle[1]
             self.showName = '(' + str(self.x) + ', ' + str(self.y) + ')'
-            print('押し込み量', self.showName)
+            self.logger.info('押し込み量', self.showName)
         else:
             angle = math.radians(angle) if isDegree else angle
 
@@ -287,10 +286,9 @@ Direction.R_UP_LEFT = Direction(Stick.RIGHT, 135, showName='UP_LEFT')
 class KeyPress:
     def __init__(self, ser):
 
-        self._logger = getLogger(__name__)
-        self._logger.addHandler(NullHandler())
-        self._logger.setLevel(DEBUG)
-        self._logger.propagate = True
+        self.logger = getLogger(__name__)
+        self.logger.addHandler(NullHandler())
+        self.logger.propagate = True
 
         self.q = queue.Queue()
         self.ser = ser
@@ -357,8 +355,8 @@ class KeyPress:
 
         for btn in btns:
             if btn in self.holdButton:
-                print('Warning: ' + btn.name + ' is already in holding state')
-                self._logger.warning(f"Warning: {btn.name} is already in holding state")
+                # print('Warning: ' + btn.name + ' is already in holding state')
+                self.logger.warning(f"Warning: {btn.name} is already in holding state")
                 return
 
             self.holdButton.append(btn)

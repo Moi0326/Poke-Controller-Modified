@@ -23,7 +23,7 @@ from Menubar import PokeController_Menubar
 # from get_pokestatistics import GetFromHomeGUI
 
 NAME = "Poke-Controller"
-VERSION = "v3.0.2.7.0 Modified"  # based on 1.0-beta3
+VERSION = "v4.0.0.0 Modified"  # based on 1.0-beta3
 
 '''
 Todo:
@@ -40,11 +40,10 @@ Todo:
 class PokeControllerApp:
     def __init__(self, master=None):
 
-        self._logger = getLogger(__name__)
-        self._logger.addHandler(NullHandler())
+        self.logger = getLogger(__name__)
+        self.logger.addHandler(NullHandler())
 
-        self._logger.setLevel(DEBUG)
-        self._logger.propagate = True
+        self.logger.propagate = True
 
         self.root = master
         self.root.title(NAME + ' ' + VERSION)
@@ -281,7 +280,7 @@ class PokeControllerApp:
                 # Locate an entry instead whenever dll is not imported successfully
                 self.camera_name_fromDLL.set("An error occurred when displaying the camera name in the Win/Mac "
                                              "environment.")
-                self._logger.warning("An error occurred when displaying the camera name in the Win/Mac environment.")
+                self.logger.warning("An error occurred when displaying the camera name in the Win/Mac environment.")
                 self.Camera_Name.config(state='disable')
         elif platform.system() != 'Linux':
             self.camera_name_fromDLL.set("Linux environment. So that cannot show Camera name.")
@@ -311,11 +310,11 @@ class PokeControllerApp:
 
         self.show_size_tmp = self.show_size_cb['values'].index(self.show_size_cb.get())
         self.root.bind('<Key-F5>', self.ReloadCommandWithF5)
-        self._logger.debug("Bind F5 key to reload commands")
+        self.logger.debug("Bind F5 key to reload commands")
         self.root.bind('<Key-F6>', self.StartCommandWithF6)
-        self._logger.debug("Bind F6 key to execute commands")
+        self.logger.debug("Bind F6 key to execute commands")
         self.root.bind('<Key-Escape>', self.StopCommandWithEsc)
-        self._logger.debug("Bind Escape key to stop commands")
+        self.logger.debug("Bind Escape key to stop commands")
 
         # Main widget
         self.mainwindow = self.frame_1
@@ -347,7 +346,7 @@ class PokeControllerApp:
 
             self.camera_dic[str(max(list(self.camera_dic.keys())) + 1)] = 'Disable'
             self.Camera_Name['values'] = [device for device in self.camera_dic.values()]
-            self._logger.debug(f"Camera list: {[device for device in self.camera_dic.values()]}")
+            self.logger.debug(f"Camera list: {[device for device in self.camera_dic.values()]}")
             dev_num = len(self.camera_dic)
 
         elif platform.system() == "Darwin":
@@ -364,11 +363,11 @@ class PokeControllerApp:
             return False
         if self.camera_id.get() > dev_num - 1:
             print('Inappropriate camera ID! -> set to 0')
-            self._logger.debug('Inappropriate camera ID! -> set to 0')
+            self.logger.debug('Inappropriate camera ID! -> set to 0')
             self.camera_id.set(0)
             if dev_num == 0:
                 print('No camera devices can be found.')
-                self._logger.debug('No camera devices can be found.')
+                self.logger.debug('No camera devices can be found.')
         #
         self.camera_entry.bind('<KeyRelease>', self.assignCamera)
         self.Camera_Name.current(self.camera_id.get())
@@ -378,7 +377,7 @@ class PokeControllerApp:
 
     def OpenCaptureDir(self):
         directory = "Captures"
-        self._logger.debug(f'Open folder: \'{directory}\'')
+        self.logger.debug(f'Open folder: \'{directory}\'')
         if platform.system() == 'Windows':
             subprocess.call(f'explorer "{directory}"')
         elif platform.system() == 'Darwin':
@@ -390,7 +389,7 @@ class PokeControllerApp:
             directory = os.path.join("Commands", "PythonCommands")
         else:
             directory = os.path.join("Commands", "McuCommands")
-        self._logger.debug(f'Open folder: \'{directory}\'')
+        self.logger.debug(f'Open folder: \'{directory}\'')
         if platform.system() == 'Windows':
             subprocess.call(f'explorer "{directory}"')
         elif platform.system() == 'Darwin':
@@ -434,7 +433,7 @@ class PokeControllerApp:
         else:
             if self.ser.openSerial(self.com_port.get(), self.com_port_name.get()):
                 print('COM Port ' + str(self.com_port.get()) + ' connected successfully')
-                self._logger.debug('COM Port ' + str(self.com_port.get()) + ' connected successfully')
+                self.logger.debug('COM Port ' + str(self.com_port.get()) + ' connected successfully')
                 self.keyPress = KeyPress(self.ser)
 
     def activateKeyboard(self):
@@ -549,18 +548,18 @@ class PokeControllerApp:
             self.py_cb.set(oldval_py)
         self.assignCommand()
         print('Finished reloading command modules.')
-        self._logger.info("Reloaded commands.")
+        self.logger.info("Reloaded commands.")
 
     def startPlay(self, *event):
         if self.cur_command is None:
             print('No commands have been assigned yet.')
-            self._logger.info('No commands have been assigned yet.')
+            self.logger.info('No commands have been assigned yet.')
 
         # set and init selected command
         self.assignCommand()
 
         print(self.startButton["text"] + ' ' + self.cur_command.NAME)
-        self._logger.info(self.startButton["text"] + ' ' + self.cur_command.NAME)
+        self.logger.info(self.startButton["text"] + ' ' + self.cur_command.NAME)
         self.cur_command.start(self.ser, self.stopPlayPost)
 
         self.startButton["text"] = "Stop"
@@ -569,7 +568,7 @@ class PokeControllerApp:
 
     def stopPlay(self):
         print(self.startButton["text"] + ' ' + self.cur_command.NAME)
-        self._logger.info(self.startButton["text"] + ' ' + self.cur_command.NAME)
+        self.logger.info(self.startButton["text"] + ' ' + self.cur_command.NAME)
         self.startButton["state"] = "disabled"
         self.cur_command.end(self.ser)
 
@@ -580,7 +579,7 @@ class PokeControllerApp:
         self.reloadCommandButton["state"] = "normal"
 
     def run(self):
-        self._logger.debug("Start Poke-Controller")
+        self.logger.debug("Start Poke-Controller")
         self.mainwindow.mainloop()
 
     def exit(self):
@@ -609,7 +608,7 @@ class PokeControllerApp:
 
             self.camera.destroy()
             cv2.destroyAllWindows()
-            self._logger.debug("Stop Poke Controller")
+            self.logger.debug("Stop Poke Controller")
             self.root.destroy()
 
     def closingController(self):
@@ -630,7 +629,7 @@ class PokeControllerApp:
     def StartCommandWithF6(self, *event):
         if self.startButton["text"] == "Stop":
             print("Command is now working!")
-            self._logger.debug("Command is now working!")
+            self.logger.debug("Command is now working!")
         elif self.startButton["text"] == "Start":
             self.startPlay()
 

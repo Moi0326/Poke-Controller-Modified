@@ -18,10 +18,9 @@ class PokeKeycon:
         self.setting = configparser.ConfigParser()
         self.setting.optionxform = str
 
-        self._logger = getLogger(__name__)
-        self._logger.addHandler(NullHandler())
-        self._logger.setLevel(DEBUG)
-        self._logger.propagate = True
+        self.logger = getLogger(__name__)
+        self.logger.addHandler(NullHandler())
+        self.logger.propagate = True
 
         self.kc.resizable(False, False)
 
@@ -266,7 +265,7 @@ class PokeKeycon:
             on_press=lambda ev: self.on_press(ev, var=var),
             on_release=lambda ev: self.on_release(ev, var=var, button_name=button_name))
         self.listener.start()
-        self._logger.debug("Activate key config window")
+        self.logger.debug("Activate key config window")
 
     def onFocusOutController(self, event):
         self.listener.stop()
@@ -284,7 +283,7 @@ class PokeKeycon:
     def on_release(self, key, var, button_name):
         try:
             spc = button_name.split(".")[0]
-            self._logger.debug(f"Released key :{var.get()}")
+            self.logger.debug(f"Released key :{var.get()}")
             self.setting[f'KeyMap-{spc}'][button_name] = var.get()
         except:
             pass
@@ -340,7 +339,7 @@ class PokeKeycon:
 
     def apply_setting(self):
         with open(self.SETTING_PATH, 'w', encoding='utf-8') as file:
-            self._logger.debug("Apply key setting")
+            self.logger.debug("Apply key setting")
             self.setting.write(file)
         if self.listener is not None:
             self.listener.stop()

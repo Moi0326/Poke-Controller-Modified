@@ -78,7 +78,7 @@ class StickRight(StickCommand):
         self.key = None
         self._logger = getLogger(__name__)
 
-    def start(self, ser):
+    def start(self, ser, postProcess=None):
         super().start(ser)
         self.key = KeyPress(ser)
         self._logger.debug("Start RightStick Serial Connection")

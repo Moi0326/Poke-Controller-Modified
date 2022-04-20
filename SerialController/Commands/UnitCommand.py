@@ -7,7 +7,7 @@ from . import CommandBase
 from .Keys import Button, Hat, KeyPress
 
 
-# Sigle button command
+# Single button command
 class UnitCommand(CommandBase.Command):
     def __init__(self):
         super().__init__()

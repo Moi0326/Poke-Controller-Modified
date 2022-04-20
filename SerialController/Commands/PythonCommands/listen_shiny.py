@@ -6,8 +6,10 @@ from Commands.PythonCommandBase import PythonCommand
 
 try:
     import pyaudio
+    is_pyaudio_installed = True
 except ImportError:
-    print("PyAudio is not installed.")
+    is_pyaudio_installed = False
+    # print("PyAudio is not installed.")
     pass
 except:
     pass
@@ -49,6 +51,8 @@ class ListenShiny(PythonCommand):
 
     def __init__(self):
         super().__init__()
+        if not is_pyaudio_installed:
+            self.logger.warning("Pyaudio is not installed")
 
     def do(self):
 
@@ -77,7 +81,7 @@ class ListenShiny(PythonCommand):
                         frames_per_buffer=CHUNK,
                         input=True,
                         output=False)
-        self._logger.debug(f"Connect: {p.get_device_info_by_index(device_index)}")
+        self.logger.debug(f"Connect: {p.get_device_info_by_index(device_index)}")
         try:
             while stream.is_active():  # 無限ループします
                 if not self.checkIfAlive():
@@ -130,8 +134,9 @@ class ListenShiny(PythonCommand):
                         # wf.writeframes(data)
                         # wf.close()
 
-                        print("Sounds Shiny!" + this_time)
-                        self._logger.debug("Recognized sound.")
+                        # print("Sounds Shiny!" + this_time)
+                        self.logger.info("Sounds Shiny!" + this_time)
+                        self.logger.debug("Recognized sound.")
                         data1 = []
                         data2 = []
                         sound_count = 0

@@ -7,7 +7,7 @@ from abc import abstractclassmethod
 from time import sleep
 import random
 import time
-from logging import getLogger, DEBUG, NullHandler
+from logging import getLogger, DEBUG, NullHandler, INFO
 
 from LineNotify import Line_Notify
 from . import CommandBase
@@ -30,10 +30,10 @@ class PythonCommand(CommandBase.Command):
         self.postProcess = None
         self.Line = Line_Notify()
 
-        self._logger = getLogger(__name__)
-        self._logger.addHandler(NullHandler())
-        self._logger.setLevel(DEBUG)
-        self._logger.propagate = True
+        self.logger = getLogger(__name__)
+        self.logger.addHandler(NullHandler())
+        # self.logger.setLevel(INFO)
+        self.logger.propagate = True
 
     @abstractclassmethod
     def do(self):
@@ -48,13 +48,13 @@ class PythonCommand(CommandBase.Command):
                 self.do()
                 self.finish()
         except StopThread:
-            print('-- finished successfully. --')
-            self._logger.info("Command finished successfully")
+            # print('-- finished successfully. --')
+            self.logger.info('-- finished successfully. --')
         except:
             if self.keys is None:
                 self.keys = KeyPress(ser)
-            print('interrupt')
-            self._logger.warning('Command stopped unexpectedly')
+            # print('interrupt')
+            self.logger.warning('Command stopped unexpectedly')
             import traceback
             traceback.print_exc()
             self.keys.end()
@@ -73,8 +73,8 @@ class PythonCommand(CommandBase.Command):
     def sendStopRequest(self):
         if self.checkIfAlive():  # try if we can stop now
             self.alive = False
-            print('-- sent a stop request. --')
-            self._logger.info("Sending stop request")
+            # print('-- sent a stop request. --')
+            self.logger.info('-- sent a stop request. --')
 
     # NOTE: Use this function if you want to get out from a command loop by yourself
     def finish(self):
@@ -133,7 +133,7 @@ class PythonCommand(CommandBase.Command):
                 self.postProcess = None
 
             # raise exception for exit working thread
-            self._logger.info('Exit from command successfully')
+            self.logger.debug('Exit from command successfully')
             raise StopThread('exit successfully')
         else:
             return True
@@ -196,10 +196,10 @@ class ImageProcPythonCommand(PythonCommand):
     def __init__(self, cam, gui=None):
         super(ImageProcPythonCommand, self).__init__()
 
-        self._logger = getLogger(__name__)
-        self._logger.addHandler(NullHandler())
-        self._logger.setLevel(DEBUG)
-        self._logger.propagate = True
+        self.logger = getLogger(__name__)
+        self.logger.addHandler(NullHandler())
+        # self.logger.setLevel(DEBUG)
+        self.logger.propagate = True
 
         self.camera = cam
         self.Line = Line_Notify(self.camera)
@@ -227,7 +227,8 @@ class ImageProcPythonCommand(PythonCommand):
         _, max_val, _, max_loc = cv2.minMaxLoc(res)
 
         if show_value:
-            print(template_path + ' ZNCC value: ' + str(max_val))
+            # print(template_path + ' ZNCC value: ' + str(max_val))
+            self.logger.info(template_path + ' ZNCC value: ' + str(max_val))
 
         top_left = max_loc
         bottom_right = (top_left[0] + w + 1, top_left[1] + h + 1)
@@ -267,7 +268,8 @@ class ImageProcPythonCommand(PythonCommand):
             _, max_val, _, max_loc = cv2.minMaxLoc(res)
 
             if show_value:
-                print(template_path + ' ZNCC value: ' + str(max_val))
+                # print(template_path + ' ZNCC value: ' + str(max_val))
+                self.logger.info(template_path + ' ZNCC value: ' + str(max_val))
 
             top_left = max_loc
             bottom_right = (top_left[0] + w + 1, top_left[1] + h + 1)
@@ -312,7 +314,8 @@ class ImageProcPythonCommand(PythonCommand):
             _, max_val, _, max_loc = cv2.minMaxLoc(resultg)
 
             if show_value:
-                print(template_path + ' ZNCC value: ' + str(max_val))
+                # print(template_path + ' ZNCC value: ' + str(max_val))
+                self.logger.info(template_path + ' ZNCC value: ' + str(max_val))
 
             if max_val >= threshold:
                 # if use_gray:

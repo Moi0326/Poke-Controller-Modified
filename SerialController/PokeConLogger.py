@@ -3,7 +3,8 @@ This code has copied from https://qiita.com/Esfahan/items/275b0f124369ccf8cf18
 '''
 
 # -*- coding:utf-8 -*-
-from logging import Formatter, handlers, StreamHandler, getLogger, DEBUG
+import queue
+from logging import Formatter, handlers, StreamHandler, getLogger, DEBUG, Handler, INFO
 import logging
 import datetime as dt
 
@@ -28,11 +29,21 @@ class ColorfulHandler(logging.StreamHandler):
         super().emit(record)
 
 
+class QueueHandler(Handler):
+    def __init__(self, log_que):
+        super().__init__()
+        self.log_queue = log_que
+
+    def emit(self, record):
+        self.log_queue.put(record)
+
+
 def root_logger():
     # logging.basicConfig(handlers=[ColorfulHandler()], level=logging.DEBUG)
     # root loggerを取得
 
     logger = getLogger()
+    log_queue = queue.Queue()
 
     # formatterを作成
     formatter = Formatter('%(asctime)s %(name)s %(funcName)s [%(levelname)s]: %(message)s')
@@ -49,16 +60,20 @@ def root_logger():
     )
 
     rh.setFormatter(formatter)
+    qh = QueueHandler(log_queue)
+    qh.setFormatter(formatter)
 
     # loggerにhandlerを設定、イベント捕捉のためのレベルを設定
     logger.addHandler(handler)
     logger.addHandler(rh)
+    logger.addHandler(qh)
     # log levelを設定
     logger.setLevel(DEBUG)
+    qh.setLevel(INFO)
     # logger.debug("hello")
     # logger.info("hello")
     # logger.warning("hello")
     # logger.error("hello")
     # logger.critical("hello")
 
-    return logger
+    return logger, log_queue

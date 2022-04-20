@@ -36,6 +36,10 @@ class GuiSettings:
         self.is_show_realtime = tk.BooleanVar(value=self.setting['General Setting'].getboolean('is_show_realtime'))
         self.is_show_serial = tk.BooleanVar(value=self.setting['General Setting'].getboolean('is_show_serial'))
         self.is_use_keyboard = tk.BooleanVar(value=self.setting['General Setting'].getboolean('is_use_keyboard'))
+        self.is_use_L_stick_mouse = tk.BooleanVar(
+            value=self.setting['General Setting'].getboolean('is_use_L_stick_mouse'))
+        self.is_use_R_stick_mouse = tk.BooleanVar(
+            value=self.setting['General Setting'].getboolean('is_use_R_stick_mouse'))
         # Pokemon Home用の設定
         self.season = tk.StringVar(value=self.setting['Pokemon Home'].get('Season'))
         self.is_SingleBattle = tk.StringVar(value=self.setting['Pokemon Home'].get('Single or Double'))
@@ -56,6 +60,8 @@ class GuiSettings:
             'is_show_realtime': True,
             'is_show_serial': False,
             'is_use_keyboard': True,
+            'is_use_L_stick_mouse': False,
+            'is_use_R_stick_mouse': False,
         }
         # pokemon home用の設定
         self.setting['Pokemon Home'] = {
@@ -115,6 +121,8 @@ class GuiSettings:
             'is_show_realtime': self.is_show_realtime.get(),
             'is_show_serial': self.is_show_serial.get(),
             'is_use_keyboard': self.is_use_keyboard.get(),
+            'is_use_L_stick_mouse': self.is_use_L_stick_mouse.get(),
+            'is_use_R_stick_mouse': self.is_use_R_stick_mouse.get(),
         }
         # pokemon home用の設定
         self.setting['Pokemon Home'] = {

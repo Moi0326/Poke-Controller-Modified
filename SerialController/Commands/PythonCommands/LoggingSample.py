@@ -13,14 +13,13 @@ class LoggingSample(ImageProcPythonCommand):
 
     def __init__(self, cam):
         super().__init__(cam)
-        self._logger = getLogger(__name__)
-        self._logger.addHandler(NullHandler())
-        self._logger.setLevel(DEBUG)
-        self._logger.propagate = True
+        self.logger = getLogger(__name__)
+        self.logger.addHandler(NullHandler())
+        self.logger.propagate = True
 
     def do(self):
-        self._logger.debug("DEBUG")
-        self._logger.info("INFO")
-        self._logger.warning("WARNING")
-        self._logger.error("ERROR")
-        self._logger.critical("CRITICAL")
+        self.logger.debug("DEBUG")
+        self.logger.info("INFO")
+        self.logger.warning("WARNING")
+        self.logger.error("ERROR")
+        self.logger.critical("CRITICAL")
