@@ -1,4 +1,5 @@
 import queue
+import time
 
 import cv2
 import os
@@ -64,7 +65,7 @@ class PokeConApp(AppBase):
 
         self.combobox_fps.config(values=[60, 45, 30, 15, 5])
         self.combobox_show_size.config(values=["640x360", "1280x720", "1920x1080"])
-        self.scrollbar_log_area.after(100, self.poll_print_queue)
+        self.scrollbar_log_area.after(16, self.poll_print_queue)
 
         self.settings = None
         self.keyPress = None
@@ -104,6 +105,9 @@ class PokeConApp(AppBase):
                                    self.frame_preview,
                                    *list(map(int, self.show_size.get().split("x"))),
                                    )
+        width, height = map(int, self.show_size.get().split("x"))
+        self.preview.setShowsize(height, width)
+
         self.preview.config(cursor='crosshair')
         self.preview.pack()
         self.load_commands()
@@ -175,10 +179,17 @@ class PokeConApp(AppBase):
         self.preview.setFps(self.fps.get())
 
     def connect_com_port(self):
-        self.communication_port()
+        self.communication_port.get()
 
     def connect_communication_port(self):
         self.activate_serial()
+        if self.settings.is_use_keyboard:
+            if self.keyboard is not None:
+                self.keyboard.stop()
+                self.keyboard = None
+            if self.keyboard is None:
+                self.keyboard = SwitchKeyboardController(self.keyPress)
+                self.keyboard.listen()
 
     def toggle_show_serial(self):
         pass
@@ -394,6 +405,7 @@ class PokeConApp(AppBase):
                 self.logger.info('COM Port ' + str(self.communication_port.get()) + ' connected successfully')
                 self.keyPress = KeyPress(self.ser)
 
+
     def activate_keyboard(self) -> None:
         if self.settings.is_use_keyboard:
             # if False:
@@ -430,7 +442,7 @@ class PokeConApp(AppBase):
             self.keyboard = None
 
     def createControllerWindow(self) -> None:
-        if not self.controller is None:
+        if self.controller is not None:
             self.controller.focus_force()
             return
 
@@ -461,7 +473,7 @@ class PokeConApp(AppBase):
                 self.logger.info("Serial disconnected")
 
             # stop listening to keyboard events
-            if not self.keyboard is None:
+            if self.keyboard is not None:
                 self.keyboard.stop()
                 self.keyboard = None
 
@@ -486,14 +498,20 @@ class PokeConApp(AppBase):
         self.controller = None
 
     def poll_print_queue(self) -> None:
-        while True:
-            try:
-                s = self.log_queue.get(block=False)
-            except queue.Empty:
-                break
-            else:
-                self.update_text(s)
-        self.scrollbar_log_area.after(100, self.poll_print_queue)
+        if self.log_queue.empty():
+            pass
+        else:
+            s = self.log_queue.get(block=False)
+            self.update_text(s)
+        # while True:
+        #     try:
+        #         s = self.log_queue.get(block=False)
+        #         time.sleep(0.005)
+        #     except queue.Empty:
+        #         break
+        #     else:
+        #         self.update_text(s)
+        self.scrollbar_log_area.after(16, self.poll_print_queue)
 
     def update_text(self, rec: LogRecord) -> None:
         msg = self.queue_handler.format(rec)

@@ -46,7 +46,7 @@ class AppBase:
         self.img_icons8OpenDir16 = tk.PhotoImage(file='./assets/icons8-OpenDir-16.png')
         self.button_open_capture_folder.configure(image=self.img_icons8OpenDir16, width=10)
         self.button_open_capture_folder.grid(column=7, row=0, sticky='w')
-        self.button_open_capture_folder.configure(command=self.save_capture)
+        self.button_open_capture_folder.configure(command=self.open_capture)
         self.label_camera_name = ttk.Label(self.labelframe_camera)
         self.label_camera_name.configure(anchor='e', text='Camera Name :')
         self.label_camera_name.grid(column=0, padx=5, row=1, sticky='e')

@@ -8,6 +8,7 @@ import datetime
 import os
 import numpy as np
 from logging import getLogger, DEBUG, NullHandler, INFO
+from PIL import Image, ImageTk
 
 
 def imwrite(filename, img, params=None):
@@ -25,13 +26,14 @@ def imwrite(filename, img, params=None):
         else:
             return False
     except Exception as e:
-        print(e)
         logger.error(f"Image Write Error: {e}")
         return False
 
 
 class Camera:
     def __init__(self, fps: int = 45):
+        self.image_bgr = None
+        self.image_show = None
         self.cam_threading = None
         self.capture_size = (1280, 720)
         # self.capture_size = (1920, 1080)
@@ -50,34 +52,6 @@ class Camera:
         self.cam_threading = ReadCamThreading(cameraId, self.capture_size)
         self.cam_threading.startReadingCam()
 
-        # if os.name == 'nt':
-        #     self.logger.debug("NT OS")
-        #     self.camera = cv2.VideoCapture(cameraId, cv2.CAP_DSHOW)
-        # # self.camera = cv2.VideoCapture(cameraId)
-        # else:
-        #     self.logger.debug("Not NT OS")
-        #     self.camera = cv2.VideoCapture(cameraId)
-        #
-        # if not self.camera.isOpened():
-        #     # print("Camera ID " + str(cameraId) + " can't open.")
-        #     self.logger.error(f"Camera ID {cameraId} cannot open.")
-        #     return
-        # # print("Camera ID " + str(cameraId) + " opened successfully")
-        # # print(self.camera.get(cv2.CAP_PROP_FRAME_WIDTH))
-        # # self.camera.set(cv2.CAP_PROP_FPS, 60)
-        # self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, self.capture_size[0])
-        # self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, self.capture_size[1])
-        # if (self.camera.get(cv2.CAP_PROP_FRAME_WIDTH) != self.capture_size[0]) or (
-        #         self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT) != self.capture_size[1]):
-        #     self.logger.warning("The camera's readout size is invalid.")
-        #     self.logger.warning("Image recognition may be incorrect.")
-        # elif self.isOpened():
-        #     self.logger.warning("Camera not loaded.")
-        # else:
-        #     self.logger.info(f"Camera ID {cameraId} opened successfully.")
-
-    # self.camera.set(cv2.CAP_PROP_SETTINGS, 0)
-
     def isOpened(self) -> bool:
         ret = self.cam_threading.camera.isOpened()
         if ret:
@@ -88,12 +62,16 @@ class Camera:
         _, self.image_bgr = self.cam_threading.read()
         return self.image_bgr
 
+    def readFrame_show(self):
+        _, self.image_show = self.cam_threading.read_show()
+        return self.image_show
+
     def saveCapture(self, filename=None, crop=None, crop_ax=None, img=None):
+        self.image_bgr = self.readFrame()
         if crop_ax is None:
             crop_ax = [0, 0, 1280, 720]
         else:
             pass
-            # print(crop_ax)
 
         dt_now = datetime.datetime.now()
         if filename is None or filename == "":
@@ -125,11 +103,9 @@ class Camera:
         save_path = os.path.join(self.capture_dir, filename)
 
         try:
-            imwrite(save_path, image)
-            self.logger.info(f"Capture succeeded: {save_path}")
-            # print('capture succeeded: ' + save_path)
+            if imwrite(save_path, image):
+                self.logger.info(f"Capture succeeded: {save_path}")
         except cv2.error as e:
-            # print("Capture Failed")
             self.logger.error(f"Capture Failed :{e}")
 
     def destroy(self):
@@ -143,15 +119,15 @@ class ReadCamThreading(object):
     def __init__(self, cameraId: int, capture_size: tuple[int, int]):
         self.logger = getLogger(__name__)
         self.logger.addHandler(NullHandler())
-        # self.logger.setLevel(INFO)
         self.logger.propagate = True
+
         self.cameraId = cameraId
         self.capture_size = capture_size
         self._frame = None
-        self._frame_width = None
-        self._frame_height = None
         self.camera = None
         self._ret = False
+        self.show_size = (640, 360)
+        self.show_img = None
 
         self._is_running = False
 
@@ -164,13 +140,11 @@ class ReadCamThreading(object):
         if os.name == 'nt':
             self.logger.debug("NT OS")
             self.camera = cv2.VideoCapture(self.cameraId, cv2.CAP_DSHOW)
-        # self.camera = cv2.VideoCapture(cameraId)
         else:
             self.logger.debug("Not NT OS")
             self.camera = cv2.VideoCapture(self.cameraId)
 
         if not self.camera.isOpened():
-            # print("Camera ID " + str(cameraId) + " can't open.")
             self.logger.error(f"Camera ID {self.cameraId} cannot open.")
             return
 
@@ -189,6 +163,10 @@ class ReadCamThreading(object):
         while True:
             if self._is_running:
                 self._ret, self._frame = self._read_from_camera()
+                if self._ret:
+                    show_img = cv2.cvtColor(self._frame, cv2.COLOR_BGR2RGB)
+                    show_img = Image.fromarray(show_img).resize(self.show_size)
+                    self.show_img = ImageTk.PhotoImage(show_img)
             else:
                 break
 
@@ -206,8 +184,14 @@ class ReadCamThreading(object):
         self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, capture_size[0])
         self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, capture_size[1])
 
+    def set_show_size(self, width: int = 640, height: int = 360):
+        self.show_size = (width, height)
+
     def read(self):
         return self._ret, self._frame
+
+    def read_show(self):
+        return self._ret, self.show_img
 
     def isOpened(self):
         return self.camera.isOpened()

@@ -124,7 +124,7 @@ class Line_Notify:
 
                 self.logger.debug(f"LINE API - Limit: {self.res[i].headers['X-RateLimit-Limit']}")
                 self.logger.debug(f"LINE API - Remaining: {self.res[i].headers['X-RateLimit-Remaining']}")
-                self.logger.debug(f"LINE API - ImageLimit: {self.res[i].headers['X-RateLimit-Limit']}")
+                self.logger.debug(f"LINE API - ImageLimit: {self.res[i].headers['X-RateLimit-ImageLimit']}")
                 self.logger.debug(f"LINE API - ImageRemaining: {self.res[i].headers['X-RateLimit-ImageRemaining']}")
                 self.logger.debug(f"Reset time: {dt}")
         except AttributeError as e:

@@ -231,6 +231,7 @@ class CaptureArea(tk.Canvas):
         self.show_width = int(show_width)
         self.show_height = int(show_height)
         self.show_size = (self.show_width, self.show_height)
+        self.camera.cam_threading.set_show_size(self.show_width, self.show_height)
         self.config(width=self.show_width, height=self.show_height)
         # print("Show size set to {0} x {1}".format(self.show_width, self.show_height))
         self.logger.info("Show size set to {0} x {1}".format(self.show_width, self.show_height))
@@ -427,19 +428,19 @@ class CaptureArea(tk.Canvas):
 
     def capture(self):
         if self.is_show_var.get():
-            image_bgr = self.camera.readFrame()
+            image_bgr = self.camera.readFrame_show()
         else:
             self.after(self.next_frames, self.capture)
             return
 
         if image_bgr is not None:
-            image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
-            image_pil = Image.fromarray(image_rgb).resize(self.show_size)
-            image_tk = ImageTk.PhotoImage(image_pil)
+            # image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
+            # image_pil = Image.fromarray(image_rgb).resize(self.show_size)
+            # image_tk = ImageTk.PhotoImage(image_pil)
 
-            self.im = image_tk
+            self.im = image_bgr
             # self.configure( image=image_tk)
-            self.itemconfig(self.im_, image=image_tk)
+            self.itemconfig(self.im_, image=image_bgr)
         else:
             self.im = self.disabled_tk
             # self.configure(image=self.disabled_tk)
