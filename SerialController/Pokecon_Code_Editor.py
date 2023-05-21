@@ -40,7 +40,7 @@ class Pokecon_Code_Editor:
 		self.Text_Edit_BOX["xscrollcommand"] = self.scroll_X.set
 		self.Text_Edit_BOX["yscrollcommand"] = self.scroll_Y.set
 
-		self.Text_Edit_BOX.configure(height=10, width=50, font=("游ゴシック", 11,"bold"),undo=True,wrap=tk.NONE)
+		self.Text_Edit_BOX.configure(height=10, width=50, font=("游ゴシック", 14,"bold"),undo=True,wrap=tk.NONE)
 		self.Text_Edit_BOX.place(anchor="nw", relheight=0.98,relwidth=0.95, relx=0.01, rely=0.01, x=0, y=0)
 		self.scroll_Y.place(anchor="nw", relheight=0.98, relwidth=0.03,relx=0.96, rely=0.01, x=0, y=0)
 		self.scroll_X.place(anchor="nw", relheight=0.02,relwidth=0.96, relx=0.01, rely=0.97, x=0, y=0) 
@@ -143,7 +143,7 @@ class Pokecon_Code_Editor:
 		self.Check_Controller.place(anchor="nw",relheight=0.075,relwidth=0.2,relx=0.7,x=0,y=0)
 
 		self.Button_ZL = ttk.Button(self.Controller_Frame)
-		self.Button_ZL.configure(text='ZL', command=lambda: self.PressButton('Button.XL'))
+		self.Button_ZL.configure(text='ZL', command=lambda: self.PressButton('Button.ZL'))
 		self.Button_ZL.place(anchor="nw",relheight=0.075,relwidth=0.1,relx=0.05,rely=0.1,x=0,y=0)
 
 		self.Button_L = ttk.Button(self.Controller_Frame)
@@ -167,19 +167,19 @@ class Pokecon_Code_Editor:
 		self.Button_ZR.place(anchor="nw",relheight=0.075,relwidth=0.1,relx=0.85,rely=0.1,x=0,y=0)
 
 		self.LEFT_Stick_UP_LEFT = ttk.Button(self.Controller_Frame)
-		self.LEFT_Stick_UP_LEFT.configure(text='↖', command=lambda: self.PressButton('Direction.L_UP_LEFT'))
+		self.LEFT_Stick_UP_LEFT.configure(text='↖', command=lambda: self.PressButton('Direction.UP_LEFT'))
 		self.LEFT_Stick_UP_LEFT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.1,rely=0.2,x=0,y=0)
 
 		self.LEFT_Stick_UP = ttk.Button(self.Controller_Frame)
-		self.LEFT_Stick_UP.configure(text='↑', command=lambda: self.PressButton('Direction.L_UP'))
+		self.LEFT_Stick_UP.configure(text='↑', command=lambda: self.PressButton('Direction.UP'))
 		self.LEFT_Stick_UP.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.2,rely=0.2,x=0,y=0)
 
 		self.LEFT_Stick_UP_RIGHT = ttk.Button(self.Controller_Frame)
-		self.LEFT_Stick_UP_RIGHT.configure(text='↗', command=lambda: self.PressButton('Direction.L_UP_RIGHT'))
+		self.LEFT_Stick_UP_RIGHT.configure(text='↗', command=lambda: self.PressButton('Direction.UP_RIGHT'))
 		self.LEFT_Stick_UP_RIGHT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.3,rely=0.2,x=0,y=0)
 
 		self.LEFT_Stick_LEFT = ttk.Button(self.Controller_Frame)
-		self.LEFT_Stick_LEFT.configure(text='←', command=lambda: self.PressButton('Direction.L_LEFT'))
+		self.LEFT_Stick_LEFT.configure(text='←', command=lambda: self.PressButton('Direction.LEFT'))
 		self.LEFT_Stick_LEFT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.1,rely=0.3,x=0,y=0)
 
 		self.LEFT_Stick_L3 = ttk.Button(self.Controller_Frame)
@@ -187,19 +187,19 @@ class Pokecon_Code_Editor:
 		self.LEFT_Stick_L3.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.2,rely=0.3,x=0,y=0)
 
 		self.LEFT_Stick_RIGHT = ttk.Button(self.Controller_Frame)
-		self.LEFT_Stick_RIGHT.configure(text='→', command=lambda: self.PressButton('Direction.L_RIGHT'))
+		self.LEFT_Stick_RIGHT.configure(text='→', command=lambda: self.PressButton('Direction.RIGHT'))
 		self.LEFT_Stick_RIGHT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.3,rely=0.3,x=0,y=0)
 
 		self.LEFT_Stick_DOWN_LEFT = ttk.Button(self.Controller_Frame)
-		self.LEFT_Stick_DOWN_LEFT.configure(text='↙', command=lambda: self.PressButton('Direction.L_DOWN_LEFT'))
+		self.LEFT_Stick_DOWN_LEFT.configure(text='↙', command=lambda: self.PressButton('Direction.DOWN_LEFT'))
 		self.LEFT_Stick_DOWN_LEFT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.1,rely=0.4,x=0,y=0)
 
 		self.LEFT_Stick_DOWN = ttk.Button(self.Controller_Frame)
-		self.LEFT_Stick_DOWN.configure(text='↓',  command=lambda: self.PressButton('Direction.L_DOWN'))
+		self.LEFT_Stick_DOWN.configure(text='↓',  command=lambda: self.PressButton('Direction.DOWN'))
 		self.LEFT_Stick_DOWN.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.2,rely=0.4,x=0,y=0)
 
 		self.LEFT_Stick_DOWN_RIGHT = ttk.Button(self.Controller_Frame)
-		self.LEFT_Stick_DOWN_RIGHT.configure(text='↘', command=lambda: self.PressButton('Direction.L_DOWN_RIGHT'))
+		self.LEFT_Stick_DOWN_RIGHT.configure(text='↘', command=lambda: self.PressButton('Direction.DOWN_RIGHT'))
 		self.LEFT_Stick_DOWN_RIGHT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.3,rely=0.4,x=0,y=0)
 
 		self.Button_X = ttk.Button(self.Controller_Frame)

@@ -504,7 +504,7 @@ class TemplateDialog:
 		self.Template_showvalue_Entry_Value = self.Template_showvalue_Entry_Value.get()
 		self.Template_showposition_Entry_value = self.Template_showposition_Entry_value.get()
 		txt = (
-			f'if self.isContainTemplate(\n		templatepath = "{self.Template_Path_Entry_value}",\n		threshold = {self.Template_Threshold_Entry_Value},\n		use_gray = {self.Template_usegray_Entry_Value},\n 		show_value = {self.Template_showvalue_Entry_Value},\n 		show_position = {self.Template_showposition_Entry_value}):\n			')
+			f'if self.isContainTemplate(\n		template_path = "{self.Template_Path_Entry_value}",\n		threshold = {self.Template_Threshold_Entry_Value},\n		use_gray = {self.Template_usegray_Entry_Value},\n 		show_value = {self.Template_showvalue_Entry_Value},\n 		show_position = {self.Template_showposition_Entry_value}):\n			')
 		if self.Template_Path_Entry_value is "":
 			self._logger.debug("Close Template Dialog")
 			self.mainwindow.destroy()
@@ -697,7 +697,7 @@ class TemplatePositonDialog:
 		Y2 = self.Y2.get()
 		self.master.TAB_Get()
 		txt = (
-			f'if self.isContainTemplate(templatepath = "{self.Template_Path_Entry_value}",threshold = {self.Template_Position_Threshold_Entry_Value},\n		{self.master.tab_val}use_gray = {self.Template_Position_usegray_Entry_Value},show_value = {self.Template_Position_showvalue_Entry_Value},\n 		{self.master.tab_val}show_position = {self.Template_Position_showposition_Entry_value},crop = [{X1},{X2},{Y1},{Y2}]):\n	{self.master.tab_val}')
+			f'if self.isContainTemplate(template_path = "{self.Template_Path_Entry_value}",threshold = {self.Template_Position_Threshold_Entry_Value},\n		{self.master.tab_val}use_gray = {self.Template_Position_usegray_Entry_Value},show_value = {self.Template_Position_showvalue_Entry_Value},\n 		{self.master.tab_val}show_position = {self.Template_Position_showposition_Entry_value},crop = [{X1},{X2},{Y1},{Y2}]):\n	{self.master.tab_val}')
 		if self.Template_Path_Entry_value is "":
 			self._logger.debug("Close Template Dialog")
 			self.mainwindow.destroy()
