@@ -35,7 +35,7 @@ class PokeController_Menubar(tk.Menu):
         self.menu.add(tk.CASCADE, menu=self.menu_command, label='コマンド')
 
         self.menu.add('separator')
-        self.menu.add('command',command=self.OpenCodeDesigner ,label='Code Editor')
+        self.add('command',command=self.OpenCodeDesigner ,label='Code Editor')
         self.menu.add('command', label='設定(dummy)')
         # TODO: setup command_id_arg 'false' for menuitem.
         self.menu.add('command', command=self.exit, label='終了')
@@ -102,14 +102,19 @@ class PokeController_Menubar(tk.Menu):
         if self.code_de is not None:
             self.code_de.focus_force()
             return
-        CD_window = Pokecon_Code_Editor(self.root, self)
-        CD_window.protocol("WM_DELETE_WINDOW",self.closingCodeDesigner)
+        CD_window = Pokecon_Code_Editor(self)
+        CD_window.protocol("WM_DELETE_WINDOW",CD_window.destroy)
+        # CD_window.protocol("<Return>",None)
+
         self.code_de = CD_window
 
     def closingCodeDesigner(self):
         self._logger.debug("Close Code Desinger window")
         self.code_de.destroy()
         self.code_de = None
+        
+    def testfunc(self):
+        print("test")
 
     def exit(self):
         self._logger.debug("Close Menubar")

@@ -1,51 +1,52 @@
 #!/usr/bin/python3
 import tkinter as tk
 import tkinter.ttk as ttk
-import pyperclip
-from tkinter import filedialog
-# from Commands import UnitCommand
-from PCE_Dialog import PrintDialog,WhileDialog,DefDialog,ForDialog,WaitDialog,TemplateDialog,TemplatePositonDialog,LINEtextDialog,LINEimageDialog,CommentDialog,NewFileDialog
+import os
+
+import PCE_Command as PCEC
+import PCE_Dialog as PCED
 from logging import getLogger, DEBUG, NullHandler
 
 
 
+
 class Pokecon_Code_Editor:
-	def __init__(self, root,ser):
+	def __init__(self, master, **kw):
 		self._logger = getLogger(__name__)
 		self._logger.addHandler(NullHandler())
 		self._logger.setLevel(DEBUG)
-		self.root = root
-		self.listener = None
-		self.printD = None
-		self.WhileD = None
-		self.DefD = None 
-		self.ForD = None 
-		self.WaitD = None 
-		self.TemplateD = None 
-		self.TemplatePD = None
-		self.LINEtextD = None
-		self.LINEimageD = None
-		self.CommentD = None 
-		self.NewFileD = None 
-		self.Default_Value = "0.1"
+		self.master = master
+		self.root = self.master.root
+		self.title = "Pokecon_Code_Editor:"
+		self.ValueNone() 
 		# build ui
-		self.Body = tk.Toplevel(root)
+		self.Body = tk.Toplevel(self.root)
 		self.Body.configure(height=900, width=1000)
 		# self.Body.maxsize(900, 900)
 		# self.Body.minsize(900, 900)
-		self.Body.title("Pokecon_Code_Editor")
+		self.Body.title(self.title)
 
 
-		# print(self.Body)
+		
 
 		self.Code_Frame = ttk.Labelframe(self.Body)
 		self.Code_Frame.configure(text='Code', width=0)
+		
 
-		self.Text_Edit = tk.Text(self.Code_Frame)
-		# self.Text_Edit.insert(tk.END, self.val)
-		# self.Text_Edit.bind('<Button-Key-Tab>',self.KeyBind())
-		self.Text_Edit.configure(height=10, width=50)
-		self.Text_Edit.place(anchor="nw", relheight=0.97,relwidth=0.97, relx=0.01, rely=0.01, x=0, y=0)
+		self.Text_Edit_BOX = tk.Text(self.Code_Frame)
+		self.scroll_Y = ttk.Scrollbar(self.Code_Frame, orient='vertical', command=self.Text_Edit_BOX.yview)
+		self.scroll_X = ttk.Scrollbar(self.Code_Frame, orient='horizontal', command=self.Text_Edit_BOX.xview)
+
+		self.Text_Edit_BOX["xscrollcommand"] = self.scroll_X.set
+		self.Text_Edit_BOX["yscrollcommand"] = self.scroll_Y.set
+
+		self.Text_Edit_BOX.configure(height=10, width=50, font=("游ゴシック", 11,"bold"),undo=True,wrap=tk.NONE)
+		self.Text_Edit_BOX.place(anchor="nw", relheight=0.98,relwidth=0.95, relx=0.01, rely=0.01, x=0, y=0)
+		self.scroll_Y.place(anchor="nw", relheight=0.98, relwidth=0.03,relx=0.96, rely=0.01, x=0, y=0)
+		self.scroll_X.place(anchor="nw", relheight=0.02,relwidth=0.96, relx=0.01, rely=0.97, x=0, y=0) 
+
+
+		
 # ===================================================================================================================== #
 		self.Code_Frame.place(anchor="nw",relheight=0.78,relwidth=0.4,relx=0.01,rely=0.01,x=0,y=0)
 
@@ -142,155 +143,155 @@ class Pokecon_Code_Editor:
 		self.Check_Controller.place(anchor="nw",relheight=0.075,relwidth=0.2,relx=0.7,x=0,y=0)
 
 		self.Button_ZL = ttk.Button(self.Controller_Frame)
-		self.Button_ZL.configure(text='ZL',command=self.PressButton_ZL)
+		self.Button_ZL.configure(text='ZL', command=lambda: self.PressButton('Button.XL'))
 		self.Button_ZL.place(anchor="nw",relheight=0.075,relwidth=0.1,relx=0.05,rely=0.1,x=0,y=0)
 
 		self.Button_L = ttk.Button(self.Controller_Frame)
-		self.Button_L.configure(text='L', command=self.PressButton_L)
+		self.Button_L.configure(text='L', command=lambda: self.PressButton('Button.L'))
 		self.Button_L.place(anchor="nw",relheight=0.075,relwidth=0.1,relx=0.15,rely=0.1,x=0,y=0)
 
 		self.Button_MINUS = ttk.Button(self.Controller_Frame)
-		self.Button_MINUS.configure(text='-', command=self.PressButton_MINUS)
+		self.Button_MINUS.configure(text='-', command=lambda: self.PressButton('Button.MINUS'))
 		self.Button_MINUS.place(anchor="nw",relheight=0.075,relwidth=0.1,relx=0.35,rely=0.1,x=0,y=0)
 
 		self.Button_PLUS = ttk.Button(self.Controller_Frame)
-		self.Button_PLUS.configure(text='+',command=self.PressButton_PLUS)
+		self.Button_PLUS.configure(text='+', command=lambda: self.PressButton('Button.PLUS'))
 		self.Button_PLUS.place(anchor="nw",relheight=0.075,relwidth=0.1,relx=0.55,rely=0.1,x=0,y=0)
 
 		self.Button_R = ttk.Button(self.Controller_Frame)
-		self.Button_R.configure(text='R', command=self.PressButton_R)
+		self.Button_R.configure(text='R', command=lambda: self.PressButton('Button.R'))
 		self.Button_R.place(anchor="nw",relheight=0.075,relwidth=0.1,relx=0.75,rely=0.1,x=0,y=0)
 
 		self.Button_ZR = ttk.Button(self.Controller_Frame)
-		self.Button_ZR.configure(text='ZR', command=self.PressButton_ZR)
+		self.Button_ZR.configure(text='ZR', command=lambda: self.PressButton('Button.ZR'))
 		self.Button_ZR.place(anchor="nw",relheight=0.075,relwidth=0.1,relx=0.85,rely=0.1,x=0,y=0)
 
 		self.LEFT_Stick_UP_LEFT = ttk.Button(self.Controller_Frame)
-		self.LEFT_Stick_UP_LEFT.configure(text='↖',command=self.PressDirection_LS_UL)
+		self.LEFT_Stick_UP_LEFT.configure(text='↖', command=lambda: self.PressButton('Direction.L_UP_LEFT'))
 		self.LEFT_Stick_UP_LEFT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.1,rely=0.2,x=0,y=0)
 
 		self.LEFT_Stick_UP = ttk.Button(self.Controller_Frame)
-		self.LEFT_Stick_UP.configure(text='↑', command=self.PressDirection_LS_U)
+		self.LEFT_Stick_UP.configure(text='↑', command=lambda: self.PressButton('Direction.L_UP'))
 		self.LEFT_Stick_UP.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.2,rely=0.2,x=0,y=0)
 
 		self.LEFT_Stick_UP_RIGHT = ttk.Button(self.Controller_Frame)
-		self.LEFT_Stick_UP_RIGHT.configure(text='↗', command=self.PressDirection_LS_UR)
+		self.LEFT_Stick_UP_RIGHT.configure(text='↗', command=lambda: self.PressButton('Direction.L_UP_RIGHT'))
 		self.LEFT_Stick_UP_RIGHT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.3,rely=0.2,x=0,y=0)
 
 		self.LEFT_Stick_LEFT = ttk.Button(self.Controller_Frame)
-		self.LEFT_Stick_LEFT.configure(text='←', command=self.PressDirection_LS_L)
+		self.LEFT_Stick_LEFT.configure(text='←', command=lambda: self.PressButton('Direction.L_LEFT'))
 		self.LEFT_Stick_LEFT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.1,rely=0.3,x=0,y=0)
 
 		self.LEFT_Stick_L3 = ttk.Button(self.Controller_Frame)
-		self.LEFT_Stick_L3.configure(text='■', command=self.PressButton_LCLICK)
+		self.LEFT_Stick_L3.configure(text='■', command=lambda: self.PressButton('Button.LCLICK'))
 		self.LEFT_Stick_L3.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.2,rely=0.3,x=0,y=0)
 
 		self.LEFT_Stick_RIGHT = ttk.Button(self.Controller_Frame)
-		self.LEFT_Stick_RIGHT.configure(text='→', command=self.PressDirection_LS_R)
+		self.LEFT_Stick_RIGHT.configure(text='→', command=lambda: self.PressButton('Direction.L_RIGHT'))
 		self.LEFT_Stick_RIGHT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.3,rely=0.3,x=0,y=0)
 
 		self.LEFT_Stick_DOWN_LEFT = ttk.Button(self.Controller_Frame)
-		self.LEFT_Stick_DOWN_LEFT.configure(text='↙', command=self.PressDirection_LS_DL)
+		self.LEFT_Stick_DOWN_LEFT.configure(text='↙', command=lambda: self.PressButton('Direction.L_DOWN_LEFT'))
 		self.LEFT_Stick_DOWN_LEFT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.1,rely=0.4,x=0,y=0)
 
 		self.LEFT_Stick_DOWN = ttk.Button(self.Controller_Frame)
-		self.LEFT_Stick_DOWN.configure(text='↓',  command=self.PressDirection_LS_D)
+		self.LEFT_Stick_DOWN.configure(text='↓',  command=lambda: self.PressButton('Direction.L_DOWN'))
 		self.LEFT_Stick_DOWN.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.2,rely=0.4,x=0,y=0)
 
 		self.LEFT_Stick_DOWN_RIGHT = ttk.Button(self.Controller_Frame)
-		self.LEFT_Stick_DOWN_RIGHT.configure(text='↘', command=self.PressDirection_LS_DR)
+		self.LEFT_Stick_DOWN_RIGHT.configure(text='↘', command=lambda: self.PressButton('Direction.L_DOWN_RIGHT'))
 		self.LEFT_Stick_DOWN_RIGHT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.3,rely=0.4,x=0,y=0)
 
 		self.Button_X = ttk.Button(self.Controller_Frame)
-		self.Button_X.configure(text='X', command=self.PressButton_X)
+		self.Button_X.configure(text='X', command=lambda: self.PressButton('Button.X'))
 		self.Button_X.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.7,rely=0.2,x=0,y=0)
 
 		self.Button_Y = ttk.Button(self.Controller_Frame)
-		self.Button_Y.configure(text='Y', command=self.PressButton_Y)
+		self.Button_Y.configure(text='Y', command=lambda: self.PressButton('Button.Y'))
 		self.Button_Y.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.6,rely=0.3,x=0,y=0)
 
 		self.Button_A = ttk.Button(self.Controller_Frame)
-		self.Button_A.configure(text='A', command=self.PressButton_A)
+		self.Button_A.configure(text='A', command=lambda:self.PressButton('Button.A'))
 		self.Button_A.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.8,rely=0.3,x=0,y=0)
 
 		self.Button_B = ttk.Button(self.Controller_Frame)
-		self.Button_B.configure(text='B', command=self.PressButton_B)
+		self.Button_B.configure(text='B', command=lambda: self.PressButton('Button.B'))
 		self.Button_B.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.7,rely=0.4,x=0,y=0)
 
 		self.Button_Hat_LEFT_TOP = ttk.Button(self.Controller_Frame)
-		self.Button_Hat_LEFT_TOP.configure(text='↖',command=self.PressHat_TL)
+		self.Button_Hat_LEFT_TOP.configure(text='↖', command=lambda: self.PressButton('Hat.TOP_LEFT'))
 		self.Button_Hat_LEFT_TOP.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.1,rely=0.6,x=0,y=0)
 
 		self.Button_Hat_TOP = ttk.Button(self.Controller_Frame)
-		self.Button_Hat_TOP.configure(text='↑', command=self.PressHat_T)
+		self.Button_Hat_TOP.configure(text='↑', command=lambda: self.PressButton('Hat.TOP'))
 		self.Button_Hat_TOP.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.2,rely=0.6,x=0,y=0)
 
 		self.Button_Hat_RIGHT_TOP = ttk.Button(self.Controller_Frame)
-		self.Button_Hat_RIGHT_TOP.configure(text='↗', command=self.PressHat_TR)
+		self.Button_Hat_RIGHT_TOP.configure(text='↗', command=lambda: self.PressButton('Hat.TOP_RIGHT'))
 		self.Button_Hat_RIGHT_TOP.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.3,rely=0.6,x=0,y=0)
 
 		self.Button_Hat_LEFT = ttk.Button(self.Controller_Frame)
-		self.Button_Hat_LEFT.configure(text='←', command=self.PressHat_L)
+		self.Button_Hat_LEFT.configure(text='←', command=lambda: self.PressButton('Hat.LEFT'))
 		self.Button_Hat_LEFT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.1,rely=0.7,x=0,y=0)
 
 		self.Button_Hat_RIGHT = ttk.Button(self.Controller_Frame)
-		self.Button_Hat_RIGHT.configure(text='→', command=self.PressHat_R)
+		self.Button_Hat_RIGHT.configure(text='→', command=lambda: self.PressButton('Hat.RIGHT'))
 		self.Button_Hat_RIGHT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.3,rely=0.7,x=0,y=0)
 
 		self.Button_Hat_BTM_LEFT = ttk.Button(self.Controller_Frame)
-		self.Button_Hat_BTM_LEFT.configure(text='↙', command=self.PressHat_BL)
+		self.Button_Hat_BTM_LEFT.configure(text='↙', command=lambda: self.PressButton('Hat.BTM_LEFT'))
 		self.Button_Hat_BTM_LEFT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.1,rely=0.8,x=0,y=0)
 
 		self.Button_Hat_BTM = ttk.Button(self.Controller_Frame)
-		self.Button_Hat_BTM.configure(text='↓', command=self.PressHat_B)
+		self.Button_Hat_BTM.configure(text='↓', command=lambda: self.PressButton('Hat.BTM'))
 		self.Button_Hat_BTM.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.2,rely=0.8,x=0,y=0)
 
 		self.Button_Hat_BTM_RIGHT = ttk.Button(self.Controller_Frame)
-		self.Button_Hat_BTM_RIGHT.configure(text='↘', command=self.PressHat_BR)
+		self.Button_Hat_BTM_RIGHT.configure(text='↘', command=lambda: self.PressButton('Hat.BTM_RIGHT'))
 		self.Button_Hat_BTM_RIGHT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.3,rely=0.8,x=0,y=0)
 
 		self.RIGHT_Stick_UP_LEFT = ttk.Button(self.Controller_Frame)
-		self.RIGHT_Stick_UP_LEFT.configure(text='↖',command=self.PressDirection_RS_UL)
+		self.RIGHT_Stick_UP_LEFT.configure(text='↖', command=lambda: self.PressButton('Direction.R_UP_LEFT'))
 		self.RIGHT_Stick_UP_LEFT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.6,rely=0.6,x=0,y=0)
 
 		self.RIGHT_Stick_UP = ttk.Button(self.Controller_Frame)
-		self.RIGHT_Stick_UP.configure(text='↑', command=self.PressDirection_RS_U)
+		self.RIGHT_Stick_UP.configure(text='↑', command=lambda: self.PressButton('Direction.R_UP'))
 		self.RIGHT_Stick_UP.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.7,rely=0.6,x=0,y=0)
 
 		self.RIGHT_Stick_UP_RIGHT = ttk.Button(self.Controller_Frame)
-		self.RIGHT_Stick_UP_RIGHT.configure(text='↗', command=self.PressDirection_RS_UR)
+		self.RIGHT_Stick_UP_RIGHT.configure(text='↗', command=lambda: self.PressButton('Direction.R_UP_RIGHT'))
 		self.RIGHT_Stick_UP_RIGHT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.8,rely=0.6,x=0,y=0)
 
 		self.RIGHT_Stick_LEFT = ttk.Button(self.Controller_Frame)
-		self.RIGHT_Stick_LEFT.configure(text='←', command=self.PressDirection_RS_L)
+		self.RIGHT_Stick_LEFT.configure(text='←', command=lambda: self.PressButton('Direction.R_LEFT'))
 		self.RIGHT_Stick_LEFT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.6,rely=0.7,x=0,y=0)
 
 		self.RIGHT_Stick_R3 = ttk.Button(self.Controller_Frame)
-		self.RIGHT_Stick_R3.configure(text='■', command=self.PressButton_RCLICK)
+		self.RIGHT_Stick_R3.configure(text='■', command=lambda: self.PressButton('Button.RCLICK'))
 		self.RIGHT_Stick_R3.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.7,rely=0.7,x=0,y=0)
 
 		self.RIGHT_Stick_RIGHT = ttk.Button(self.Controller_Frame)
-		self.RIGHT_Stick_RIGHT.configure(text='→', command=self.PressDirection_RS_R)
+		self.RIGHT_Stick_RIGHT.configure(text='→', command=lambda: self.PressButton('Direction.R_RIGHT'))
 		self.RIGHT_Stick_RIGHT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.8,rely=0.7,x=0,y=0)
 
 		self.RIGHT_Stick_DOWN_LEFT = ttk.Button(self.Controller_Frame)
-		self.RIGHT_Stick_DOWN_LEFT.configure(text='↙', command=self.PressDirection_RS_DL)
+		self.RIGHT_Stick_DOWN_LEFT.configure(text='↙', command=lambda: self.PressButton('Direction.R_DOWN_LEFT'))
 		self.RIGHT_Stick_DOWN_LEFT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.6,rely=0.8,x=0,y=0)
 
 		self.RIGHT_Stick_DOWN = ttk.Button(self.Controller_Frame)
-		self.RIGHT_Stick_DOWN.configure(text='↓', command=self.PressDirection_RS_D)
+		self.RIGHT_Stick_DOWN.configure(text='↓', command=lambda: self.PressButton('Direction.R_DOWN'))
 		self.RIGHT_Stick_DOWN.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.7,rely=0.8,x=0,y=0)
 
 		self.RIGHT_Stick_DOWN_RIGHT = ttk.Button(self.Controller_Frame)
-		self.RIGHT_Stick_DOWN_RIGHT.configure(text='↘', command=self.PressDirection_RS_DR)
+		self.RIGHT_Stick_DOWN_RIGHT.configure(text='↘', command=lambda: self.PressButton('Direction.R_DOWN_RIGHT'))
 		self.RIGHT_Stick_DOWN_RIGHT.place(anchor="nw",relheight=0.075,relwidth=0.075,relx=0.8,rely=0.8,x=0,y=0)
 
 		self.Button_CAPTURE = ttk.Button(self.Controller_Frame)
-		self.Button_CAPTURE.configure(text='CAP', command=self.PressButton_CAPTURE)
+		self.Button_CAPTURE.configure(text='CAP', command=lambda: self.PressButton('Button.CAPTURE'))
 		self.Button_CAPTURE.place(anchor="nw",relheight=0.075,relwidth=0.1,relx=0.35,rely=0.9,x=0,y=0)
 
 		self.Button_HOME = ttk.Button(self.Controller_Frame)
-		self.Button_HOME.configure(text='HOME', command=self.PressButton_HOME)
+		self.Button_HOME.configure(text='HOME', command=lambda: self.PressButton('Button.HOME'))
 		self.Button_HOME.place(anchor="nw",relheight=0.075,relwidth=0.1,relx=0.55,rely=0.9,x=0,y=0)
 
 		
@@ -418,7 +419,7 @@ class Pokecon_Code_Editor:
 		self.ETC_Button_CommentOut_Value.place(anchor="nw", relheight=0.5, relx=0.5, rely=0.0, x=0, y=0.5)
 
 		self.ETC_Button_Format_Value = ttk.Button(self.ETC_Frame)
-		self.ETC_Button_Format_Value.configure(text='format',command=self.Text_Format)
+		self.ETC_Button_Format_Value.configure(text='format',command=self.Text_Format,state="disabled")
 		self.ETC_Button_Format_Value.place(anchor="nw", relheight=0.5, relx=0.5, rely=0.5, x=0, y=0.5)
 
 		self.ETC_Button_Template_Value = ttk.Button(self.ETC_Frame)
@@ -434,7 +435,7 @@ class Pokecon_Code_Editor:
 		self.ETC_Button_OCR.place(anchor="nw",relheight=1,relx=0.8,rely=0,x=0,y=0)
 
 		self.ETC_Button_NewFile = ttk.Button(self.ETC_Frame)
-		self.ETC_Button_NewFile.configure(text='新規作成', command=self.OpenNeFileDialog)
+		self.ETC_Button_NewFile.configure(text='新規作成', command=self.OpenNewFileDialog)
 		self.ETC_Button_NewFile.place(anchor="nw",relheight=0.25,relx=0.9,rely=0.0,x=0,y=0)
 
 		self.ETC_Button_OpenFile = ttk.Button(self.ETC_Frame)
@@ -442,11 +443,11 @@ class Pokecon_Code_Editor:
 		self.ETC_Button_OpenFile.place(anchor="nw", relheight=0.25, relx=0.9, rely=0.25, x=0, y=0)
 
 		self.ETC_Button_SaveFile = ttk.Button(self.ETC_Frame)
-		self.ETC_Button_SaveFile.configure(text='保存', state="disabled")
+		self.ETC_Button_SaveFile.configure(text='保存', command=self.Save)
 		self.ETC_Button_SaveFile.place(anchor="nw", relheight=0.25, relx=0.9, rely=0.5, x=0, y=0)
 
 		self.ETC_Button_NewFileSave = ttk.Button(self.ETC_Frame)
-		self.ETC_Button_NewFileSave.configure(text='新規保存',command=self.SaveFile_Button)
+		self.ETC_Button_NewFileSave.configure(text='新規保存',command=self.New_SaveFile)
 		self.ETC_Button_NewFileSave.place(anchor="nw", relheight=0.25, relx=0.9, rely=0.75, x=0, y=0)
 
 		# self.ETC_Button_Finish = ttk.Button(self.ETC_Frame)
@@ -458,464 +459,355 @@ class Pokecon_Code_Editor:
 		# ===================================================================================================================== #
 
 		self.Body.grid_propagate(0)
+		self.Menu_Bar = tk.Menu(self.Body, tearoff=0)
+		self.Menu_Command = tk.Menu(self.Menu_Bar, tearoff=0)
+		self.Menu_Settings = tk.Menu(self.Menu_Bar, tearoff=0)
+		self.Menu_Recent = tk.Menu(self.Menu_Bar, tearoff=0)
+		self.Menu_Controller = tk.Menu(self.Menu_Bar,tearoff=0)
 
-		# Main widget
-		self.mainwindow = self.Body
+		
 
+		
+		self.Body.config(menu=self.Menu_Bar)
+		self.Menu_Bar_some()
+		self.SC_BIND()
+		# self.mainwindow.bind("Button-1", self.Finish_Button)
+		
+
+
+		# self.Press_Bind()
+	# def run(self):
+	# 	self.Body.mainloop()
+
+
+	def Menu_Bar_some(self):
+		self.Menu_Bar.add_cascade(label='メニュー',menu=self.Menu_Command)
+		self.Menu_Bar.add_cascade(label='Readme')
+		self.Menu_Bar.add_cascade(label='Controller')
+
+		self.Menu_Command.add_command(
+			label=u"新規作成", command=self.OpenNewFileDialog, accelerator='Ctrl-N')
+		self.Menu_Command.add_command(
+			label=u"開く", command=self.OpenFile_Button, accelerator='Ctrl-O')
+		self.Menu_Command.add_command(label=u"保存",command=self.Save ,accelerator='Ctrl-S')
+		self.Menu_Command.add_command(
+			label=u"名前を付けて保存", command=self.New_SaveFile, accelerator='Ctrl-Shift-S')
+		self.Menu_Command.add_cascade(label=u'最近開いたファイル(dummy)',menu=self.Menu_Recent)  # リストでここ最近開いたものを取得
+		self.Menu_Command.add_separator()
+		self.Menu_Command.add_cascade(label=u"設定",menu=self.Menu_Settings)
+		self.Menu_Command.add_separator()
+		self.Menu_Command.add_command(label=u"終了", command=self.destroy, accelerator='Ctrl-Q')
+		# self.Menu_Command.add(tk.CASCADE,menu=self.PCEmenu_Command ,label='最近開いたファイル(dummy)') # リストでここ最近開いたものを取得
+		self.Menu_Bar_ADD()
+
+	def Menu_Bar_ADD(self):
+		self.Menu_Recent.add_command(label='dummy')
+		self.Menu_Settings.add_command(label='プロファイル作成(dummy)')
+		self.Menu_Settings.add_command(label='プロファイル読み込み(dummy)')
+
+	def SC_BIND(self):
+		self.Body.bind("<Control-KeyRelease-q>", self.destroy)
+		self.Body.bind("<Return>", "break")
+		self.Body.bind("<Shift-Return>", self.testfunc)
+		self.Body.bind("<Control-KeyRelease-o>", self.OpenFile_Button)			
+		self.Body.bind("<Control-KeyRelease-n>", self.OpenNewFileDialog)
+		self.Body.bind("<Control-KeyRelease-q>", self.destroy)
+		self.Body.bind("<Control-KeyRelease-s>", self.Save)
+		self.Body.bind("<Control-Shift-S>", self.New_SaveFile)
+
+		
+
+		
 
 
 
 	def bind(self, event, func):
-		self.mainwindow.bind(event, func)
-
-	def KeyBind(self,event,func):
-		print("    ")
+		self.Body.bind(event, func)
 
 	def protocol(self, event, func):
-		self.mainwindow.protocol(event, func)
+		self.Body.protocol(event, func)
 
 	def focus_force(self):
-		self.mainwindow.focus_force()
+		self.Body.focus_force()
 
-	def destroy(self):
-		self.mainwindow.destroy()
+
+
+	def destroy(self,event=None):
+		self.Body.destroy()
+		self.master.code_de = None
+		
 
 	def ValueGet(self):
 		self.ETC_Entry_Duration_value2 = self.ETC_Entry_Duration_value.get()
 		self.ETC_Entry_Wait_value2 = self.ETC_Entry_Wait_value.get()
 
 
-	def Clip_BoardPaste(self):
-		self.val = pyperclip.paste()
-		print(self.val)
-		self.Text_Edit.insert(tk.INSERT,self.val)
-		pyperclip.copy("")
 
 	def saveCapture_Button(self):
-		self.val = ('self.saveCapture("")\n')
-		self.Text_Edit.insert(tk.INSERT, self.val)
+		self.TAB_Get()
+		self.val = (f'self.saveCapture("")\n{self.tab_val}')
+		self.Text_Edit_BOX.insert(tk.INSERT, self.val)
 
 	def checkIfAlive_Button(self):
-		self.val = ("self.checkIfAlive():\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
+		self.TAB_Get()
+		self.val = (f"self.checkIfAlive()\n{self.tab_val}")
+		self.Text_Edit_BOX.insert(tk.INSERT, self.val)
 		
 	def Finish_Button(self):
-		self.val = ("self.finish():\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
+		self.TAB_Get()
+		self.val = (f"self.finish()\n{self.tab_val}")
+		self.Text_Edit_BOX.insert(tk.INSERT, self.val)
 
 
-	# 将来的に別ファイルに分けたい。
-	# PressButtonの所だけ。
-
+	# pressButtonはPCE‗Commandに追加した。
+	# インデントの処理の追加がまだ
+	# インデント処理はまた今度。　
 	# self.Check_ControllerがTrueの時の動作も追加したい。
 
-	def PressButton_A(self):
-		# self.Check_Controller_value = self.Check_Controller_value.get()
-		# if self.Check_Controller_value == True:
-		# 	UnitCommand.A().start(ser)
+	def PressButton(self,Button):
+		self.TAB_Get()
 		self.ValueGet()
-		self.val = (f"        self.press(Button.A,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
+		txt = PCEC.PCE_Command.pressButton(Button = Button,duration=self.ETC_Entry_Duration_value2,wait=self.ETC_Entry_Wait_value2,tab=self.tab_val)
+		self.Text_Edit_BOX.insert(tk.INSERT, txt)
 
-	def PressButton_B(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Button.B,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
+	def TAB_Get(self):
+		txt = self.Text_Edit_BOX.get('insert linestart',"insert lineend")
+		Count =txt.count("	")
+		# print(Count)
+		self.tab_val = "	"*Count
+		# self.Text_Edit_BOX.insert(tk.INSERT,txt)
+		# return self.tab_val
 
-	def PressButton_X(self):
-			self.ETC_Entry_Duration_value2 = self.ETC_Entry_Duration_value.get()
-			self.ETC_Entry_Wait_value2 = self.ETC_Entry_Wait_value.get()
-			self.val = (f"        self.press(Button.X,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-			self.Text_Edit.insert(tk.INSERT, self.val)
-		
-	def PressButton_Y(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Button.Y,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressButton_L(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Button.L,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressButton_ZL(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Button.ZL,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
+	def testfunc(self,event):
+		pass
 	
-	def PressButton_R(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Button.R,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressButton_ZR(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Button.ZR,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressButton_PLUS(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Button.PLUS,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-	
-	def PressButton_MINUS(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Button.MINUS,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressButton_CAPTURE(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Button.CAPTURE,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressButton_HOME(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Button.HOME,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressButton_LCLICK(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Button.LCLICK,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressButton_RCLICK(self):
-		self.ValueGet()
-		self.val = (
-					f"        self.press(Button.RCLICK,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressDirection_LS_UL(self):
-		self.ValueGet()
-		self.val = (
-					f"        self.press(Direction.L_UP_LEFT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-	
-	def PressDirection_LS_U(self):
-		self.ValueGet()
-		self.val = (
-					f"        self.press(Direction.L_UP,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressDirection_LS_UR(self):
-		self.ValueGet()
-		self.val = (
-					f"        self.press(Direction.L_UP_RIGHT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressDirection_LS_L(self):
-		self.ValueGet()
-		self.val = (
-					f"        self.press(Direction.L_LEFT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressDirection_LS_R(self):
-		self.ValueGet()
-		self.val = (
-					f"        self.press(Direction.L_RIGHT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressDirection_LS_DL(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Direction.L_DOWN_LEFT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-	
-	def PressDirection_LS_D(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Direction.L_DOWN,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressDirection_LS_DR(self):
-		self.ValueGet()
-		self.val = (
-					f"        self.press(Direction.L_DOWN_RIGHT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressHat_TL(self):
-		self.ValueGet()
-		self.val = (
-					f"        self.press(Hat.TOP_LEFT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressHat_T(self):
-		self.ValueGet()
-		self.val = (
-					f"        self.press(Hat.TOP,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressHat_TR(self):
-		self.ValueGet()
-		self.val = (
-					f"        self.press(Hat.TOP_RIGHT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressHat_L(self):
-		self.ValueGet()
-		self.val = (
-					f"        self.press(Hat.LEFT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressHat_R(self):
-		self.ValueGet()
-		self.val = (
-					f"        self.press(Hat.RIGHT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-	
-	def PressHat_BL(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Hat.BTM_LEFT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressHat_B(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Hat.BTM,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressHat_BR(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Hat.BTM_RIGHT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressDirection_RS_UL(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Direction.R_UP_LEFT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressDirection_RS_U(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Direction.R_UP,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressDirection_RS_UR(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Direction.R_UP_RIGHT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressDirection_RS_L(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Direction.R_LEFT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressDirection_RS_R(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Direction.R_RIGHT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressDirection_RS_DL(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Direction.R_DOWN_LEFT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressDirection_RS_D(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Direction.R_DOWN,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
-	def PressDirection_RS_DR(self):
-		self.ValueGet()
-		self.val = (f"        self.press(Direction.R_DOWN_RIGHT,duration = {self.ETC_Entry_Duration_value2}, wait = {self.ETC_Entry_Wait_value2})\n")
-		self.Text_Edit.insert(tk.INSERT, self.val)
-
+	def TAB_insert(self,event):
+		txt = self.Text_Edit_BOX.get('insert linestart', "insert lineend")
+		Count = txt.count("\t")
+		# print(Count)
+		self.tab_val = "	"*Count
+		self.Text_Edit_BOX.insert(tk.INSERT, self.tab_val)
 
 	def OpenPrintDialog(self):
-		self._logger.debug("Open print dialog")
 		if self.printD is not None:
 			self.printD.focus_force()
 			return
-		Print_Dialog_window = PrintDialog(self.root, self)
-		Print_Dialog_window.protocol("WM_DELETE_WINDOW", self.closingPrintDialog)
+		self._logger.debug("Open print dialog")
+		Print_Dialog_window = PCED.PrintDialog(self)
+		Print_Dialog_window.focus_force()
+		Print_Dialog_window.protocol("WM_DELETE_WINDOW", Print_Dialog_window.destroy)
 		self.printD = Print_Dialog_window
 
-	def closingPrintDialog(self):
-		self._logger.debug("Close Print Dialog")
-		self.printD.destroy()
-		self.Clip_BoardPaste()
-		self.printD = None
 
 	def OpenWhileDialog(self):
-		self._logger.debug("Open While dialog")
 		if self.WhileD is not None:
 			self.WhileD.focus_force()
 			return
-		While_Dialog_window = WhileDialog(self.root, self)
-		While_Dialog_window.protocol("WM_DELETE_WINDOW", self.closingWhileDialog)
+		self._logger.debug("Open While dialog")
+		While_Dialog_window = PCED.WhileDialog(self)
+		While_Dialog_window.focus_force()
+		While_Dialog_window.protocol("WM_DELETE_WINDOW", While_Dialog_window.destroy)
 		self.WhileD = While_Dialog_window
 
-	def closingWhileDialog(self):
-		self._logger.debug("Close While Dialog")
-		self.WhileD.destroy()
-		self.Clip_BoardPaste()
-		self.WhileD = None
+
 
 	def OpenDefDialog(self):
-		self._logger.debug("Open Def dialog")
 		if self.DefD is not None:
 			self.DefD.focus_force()
 			return
-		Def_Dialog_window = DefDialog(self.root, self)
-		Def_Dialog_window.protocol("WM_DELETE_WINDOW", self.closingDefDialog)
+		self._logger.debug("Open Def dialog")
+		Def_Dialog_window = PCED.DefDialog(self)
+		Def_Dialog_window.focus_force()
+		Def_Dialog_window.protocol("WM_DELETE_WINDOW", Def_Dialog_window.destroy)
 		self.DefD = Def_Dialog_window
 
-	def closingDefDialog(self):
-		self._logger.debug("Close Def Dialog")
-		self.DefD.destroy()
-		self.Clip_BoardPaste()
-		self.DefD = None
 
 	def OpenForDialog(self):
-		self._logger.debug("Open For dialog")
 		if self.ForD is not None:
 			self.ForD.focus_force()
 			return
-		For_Dialog_window = ForDialog(self.root, self)
-		For_Dialog_window.protocol("WM_DELETE_WINDOW", self.closingForDialog)
+		self._logger.debug("Open For dialog")
+		For_Dialog_window = PCED.ForDialog(self)
+		For_Dialog_window.focus_force()
+		For_Dialog_window.protocol("WM_DELETE_WINDOW", For_Dialog_window.destroy)
 		self.ForD = For_Dialog_window
 
-	def closingForDialog(self):
-		self._logger.debug("Close For Dialog")
-		self.ForD.destroy()
-		self.Clip_BoardPaste()
-		self.ForD = None
 
 	def OpenWaitDialog(self):
-		self._logger.debug("Open Wait dialog")
 		if self.WaitD is not None:
 			self.WaitD.focus_force()
 			return
-		Wait_Dialog_window = WaitDialog(self.root, self)
-		Wait_Dialog_window.protocol("WM_DELETE_WINDOW", self.closingWaitDialog)
+		self._logger.debug("Open Wait dialog")
+		Wait_Dialog_window = PCED.WaitDialog(self)
+		Wait_Dialog_window.focus_force()
+		Wait_Dialog_window.protocol("WM_DELETE_WINDOW", Wait_Dialog_window.destroy)
 		self.WaitD = Wait_Dialog_window
 
-	def closingWaitDialog(self):
-		self._logger.debug("Close Wait Dialog")
-		self.WaitD.destroy()
-		self.Clip_BoardPaste()
-		self.WaitD = None
 
 	def OpenTemplateDialog(self):
-		self._logger.debug("Open Template dialog")
 		if self.TemplateD is not None:
 			self.TemplateD.focus_force()
 			return
-		Template_Dialog_window = TemplateDialog(self.root, self)
-		Template_Dialog_window.protocol("WM_DELETE_WINDOW", self.closingTemplateDialog)
+		self._logger.debug("Open Template dialog")
+		Template_Dialog_window = PCED.TemplateDialog(self)
+		Template_Dialog_window.focus_force()
+		Template_Dialog_window.protocol("WM_DELETE_WINDOW", Template_Dialog_window.destroy)
 		self.TemplateD = Template_Dialog_window
 
-	def closingTemplateDialog(self):
-		self._logger.debug("Close Template Dialog")
-		self.TemplateD.destroy()
-		self.Clip_BoardPaste()
-		self.TemplateD = None
+		
 
 	def OpenTemplatePDialog(self):
-		self._logger.debug("Open Template dialog")
 		if self.TemplatePD is not None:
 			self.TemplatePD.focus_force()
 			return
-		TemplateP_Dialog_window = TemplatePositonDialog(self.root, self)
+		self._logger.debug("Open Template dialog")
+		TemplateP_Dialog_window = PCED.TemplatePositonDialog(self)
+		TemplateP_Dialog_window.focus_force()
 		TemplateP_Dialog_window.protocol(
-			"WM_DELETE_WINDOW", self.closingTemplateDialog)
+			"WM_DELETE_WINDOW", TemplateP_Dialog_window.destroy)
 		self.TemplatePD = TemplateP_Dialog_window
 
-	def closingTemplatePDialog(self):
-		self._logger.debug("Close Template Dialog")
-		self.TemplatePD.destroy()
-		self.Clip_BoardPaste()
-		self.TemplatePD = None
 
 	def OpenLINEtextDialog(self):
-		self._logger.debug("Open LINEtext dialog")
 		if self.LINEtextD is not None:
 			self.LINEtextD.focus_force()
 			return
-		LINEtextP_Dialog_window = LINEtextDialog(self.root, self)
+		self._logger.debug("Open LINEtext dialog")
+		LINEtextP_Dialog_window = PCED.LINEtextDialog(self)
+		LINEtextP_Dialog_window.focus_force()
 		LINEtextP_Dialog_window.protocol(
-			"WM_DELETE_WINDOW", self.closingLINEtextDialog)
+			"WM_DELETE_WINDOW", LINEtextP_Dialog_window.destroy)
 		self.LINEtextD = LINEtextP_Dialog_window
-
-	def closingLINEtextDialog(self):
-		self._logger.debug("Close LINEtext Dialog")
-		self.LINEtextD.destroy()
-		self.Clip_BoardPaste()
-		self.LINEtextD = None
+		
 
 	def OpenLINEimageDialog(self):
-		self._logger.debug("Open LINEimage dialog")
 		if self.LINEimageD is not None:
 			self.LINEimageD.focus_force()
 			return
-		LINEimageP_Dialog_window = LINEimageDialog(self.root, self)
+		self._logger.debug("Open LINEimage dialog")
+		LINEimageP_Dialog_window = PCED.LINEimageDialog(self)
+		LINEimageP_Dialog_window.focus_force()
 		LINEimageP_Dialog_window.protocol(
-			"WM_DELETE_WINDOW", self.closingLINEimageDialog)
+			"WM_DELETE_WINDOW", LINEimageP_Dialog_window.destroy)
 		self.LINEimageD = LINEimageP_Dialog_window
 
-	def closingLINEimageDialog(self):
-		self._logger.debug("Close LINEimage Dialog")
-		self.LINEimageD.destroy()
-		self.Clip_BoardPaste()
-		self.LINEimageD = None
 
 	def OpenCommentOutPDialog(self):
-		self._logger.debug("Open Comment dialog")
 		if self.CommentD is not None:
 			self.CommentD.focus_force()
 			return
-		Comment_Dialog_window = CommentDialog(self.root, self)
+		self._logger.debug("Open Comment dialog")
+		Comment_Dialog_window = PCED.CommentDialog(self)
+		Comment_Dialog_window.focus_force()
 		Comment_Dialog_window.protocol(
-			"WM_DELETE_WINDOW", self.closingCommentOutDialog)
+			"WM_DELETE_WINDOW", Comment_Dialog_window.destroy)
 		self.CommentD = Comment_Dialog_window
-
-	def closingCommentOutDialog(self):
-		self._logger.debug("Close Comment Dialog")
-		self.CommentD.destroy()
-		self.Clip_BoardPaste()
-		self.CommentD = None
-
-	def OpenNeFileDialog(self):
-		self._logger.debug("Open NewFile dialog")
+		
+	def OpenNewFileDialog(self,event=None):
 		if self.NewFileD is not None:
 			self.NewFileD.focus_force()
 			return
-		NewFile_Dialog_window = NewFileDialog(self.root, self)
+		self._logger.debug("Open NewFile dialog")
+		NewFile_Dialog_window = PCED.NewFileDialog(self)
+		NewFile_Dialog_window.focus_force()
 		NewFile_Dialog_window.protocol(
-			"WM_DELETE_WINDOW", self.closingNewFileOutDialog)
+			"WM_DELETE_WINDOW", NewFile_Dialog_window.destroy)
 		self.NewFileD = NewFile_Dialog_window
+		self.path = None
 
-	def closingNewFileOutDialog(self):
-		self._logger.debug("Close NewFile Dialog")
-		self.NewFileD.destroy()
-		self.Text_Edit.delete("1.0", "end")
-		self.Clip_BoardPaste()
-		self.NewFileD = None
 
 	def Text_Format(self):
-		self.Text_Edit_value  = self.Text_Edit.get("1.0","end-1c")
+		self.Text_Edit_value  = self.Text_Edit_BOX.get("1.0","end-1c")
 		self.Text_Edit_value = self.Text_Edit_value.replace("	", "    ")
-		self.Text_Edit.delete("1.0","end")
-		self.Text_Edit.insert(tk.END,self.Text_Edit_value)
+		self.Text_Edit_BOX.delete("1.0","end")
+		self.Text_Edit_BOX.insert(tk.END,self.Text_Edit_value)
 
-	def SaveFile_Button(self):
-		self.Text_File_Save = filedialog.asksaveasfilename(
-			title="名前を付けて保存", initialdir="./Commands/PythonCommands", defaultextension=".py", filetypes=[("Python", ".py"), ("Text", ".txt")])
-		# print(filename)
-		with open(self.Text_File_Save,'w',encoding='utf-8')as f:
-			self.Text_Edit_value = self.Text_Edit.get("1.0", "end-1c")
-			f.write(self.Text_Edit_value)
-			f.close
+	def new_insert(self):
+		txt2 = f"		"
+		self.Text_Edit_BOX.tag_configure("lb", background="#DDEEFF")
+		self.Text_Edit_BOX.insert("15.0", txt2, "lb")
 
+	def New_SaveFile(self,event=None):
+		txt = self.Text_Edit_BOX.get("1.0", 'end-1c')
+		title = self.Body.title()
+		title = title.replace("Pokecon_Code_Editor:","")
+		if title is "" and txt is "":
+			return
+		elif title is "":
+			title = "Untitled"
+		
+		return_Values = PCEC.PCE_Command.New_SaveFile(txt=txt,title=title)
+		if return_Values is None:
+			return
+		else:
+			self.Body.title(f"Pokecon_Code_Editor:{return_Values[0]}")
+			self.path = return_Values[1]
+			return_Values = None
 
-	def OpenFile_Button(self):
-		self.Template_Path_Entry_value = filedialog.askopenfilename(
-			filetypes=[("Python File", "*.py")], initialdir="./Commands/PythonCommands")
-		if not self.Template_Path_Entry_value:
-			self.Template_Path_Entry_value = self.Template_Path_Entry_value.replace(
-				"C:/PokeCon/Poke-Controller-Modified/SerialController/", "")
-			with open(self.Template_Path_Entry_value,"r",encoding='utf-8')as f:
-				self.Text_Edit_value = f.read()
-				f.close()
-			print(self.Template_Path_Entry_value)
-			self.Text_Edit.delete("1.0", "end")
-			self.Text_Edit.insert(tk.END,self.Text_Edit_value)
+		
 
+	def OpenFile_Button(self,event=None):
+		return_Values = PCEC.PCE_Command.OpenFile(self)
+		if return_Values is None:
+			return
+		else:
+			txt = return_Values[0]
+			title = return_Values[1]
+			self.path = return_Values[2]
+			self.Body.title(f"Pokecon_Code_Editor:{title}")
+			self.Text_Edit_BOX.delete("1.0", "end")
+			self.Text_Edit_BOX.insert(tk.END,txt)
+			return_Values = None
+
+	def Save(self,event=None):
+		title = self.Body.title()
+		title = title.replace("Pokecon_Code_Editor:", "")
+		txt = self.Text_Edit_BOX.get("1.0", 'end-1c')
+		
+		if title is"" and txt is "":
+			return
+		
+		elif title is "" and self.path is None:
+			title = "Untitled"			
+			return_Values =  PCEC.PCE_Command.New_SaveFile(txt=txt, title=title)
+			if return_Values is None:
+				return
+			else:
+				self.Body.title(return_Values[0])
+				self.path = return_Values[1]
+				return_Values= None
+
+		else:
+			if self.path is None:
+				return_Values = PCEC.PCE_Command.New_SaveFile(txt=txt, title=title)
+				if return_Values is None:
+					return
+				else:
+					self.Body.title(return_Values[0])
+					self.path = return_Values[1]
+			else:
+				return_Values = PCEC.PCE_Command.SaveFile(txt,title,self.path)
+				if return_Values is None:
+					return
+				else:
+					self.Body.title(return_Values[0])
+					self.path = return_Values[1]
+
+	def ValueNone(self):
+		self.listener = None
+		self.printD = None
+		self.WhileD = None
+		self.DefD = None
+		self.ForD = None
+		self.WaitD = None
+		self.TemplateD = None
+		self.TemplatePD = None
+		self.LINEtextD = None
+		self.LINEimageD = None
+		self.CommentD = None
+		self.NewFileD = None
+		self.path = None
+		self.Default_Value = "0.1"
 
 		
 
@@ -936,4 +828,4 @@ class Pokecon_Code_Editor:
 		self.code_de.destroy()
 		self.code_de = None
 
-
+	

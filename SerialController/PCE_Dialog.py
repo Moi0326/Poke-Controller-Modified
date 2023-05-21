@@ -2,24 +2,25 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import filedialog
-import pyperclip
 from logging import getLogger, DEBUG, NullHandler
-
-import pyautogui
+import os
 
 
 	
 class PrintDialog:
-	def __init__(self,root,menu):
+	def __init__(self, master, **kw):
 		self._logger = getLogger(__name__)
 		self._logger.addHandler(NullHandler())
 		self._logger.setLevel(DEBUG)
-		Print_Toplevel = tk.Toplevel(root)
+		self.master = master
+		self.root = self.master.root
+		self.text = self.master.Text_Edit_BOX
+		Print_Toplevel = tk.Toplevel(self.root)
 		Print_Toplevel.configure(height=200, width=200)
 		Print_Toplevel.geometry("400x200")
 		Print_Toplevel.maxsize(400, 200)
 		Print_Toplevel.minsize(400, 200)
-		Print_Toplevel.title("Code_Editor_dialog_print")
+		Print_Toplevel.title("PCE_Print")
 		Print_Frame = ttk.Frame(Print_Toplevel)
 		Print_Frame.configure(height=200, width=400)
 		Print_Label1 = ttk.Label(Print_Frame)
@@ -54,9 +55,16 @@ class PrintDialog:
 
 	def Print_Entry_Get(self):
 		self.Print_Entry_Value = self.Print_Entry_Value.get()
-		Print_Value = (f'        print("{self.Print_Entry_Value}")')
-		pyperclip.copy(Print_Value)
-		pyautogui.hotkey('alt','f4')	
+		txt = (f'print("{self.Print_Entry_Value}")\n		')
+		if self.Print_Entry_Value is "":
+			self._logger.debug("Close Print Dialog")
+			self.mainwindow.destroy()
+			self.master.printD = None
+		else:
+			self.text.insert(tk.INSERT, txt)
+			self._logger.debug("Close Print Dialog")
+			self.mainwindow.destroy()
+			self.master.printD = None
 
 	def bind(self, event, func):
 		self.mainwindow.bind(event, func)
@@ -69,7 +77,9 @@ class PrintDialog:
 		self.mainwindow.focus_force()
 
 	def destroy(self):
+		self._logger.debug("Close Print Dialog")
 		self.mainwindow.destroy()
+		self.master.printD = None
 
 	def run(self):
 		self.mainwindow.mainloop()
@@ -77,16 +87,19 @@ class PrintDialog:
 
 
 class WhileDialog:
-	def __init__(self, root, menu):
+	def __init__(self, master, **kw):
 		self._logger = getLogger(__name__)
 		self._logger.addHandler(NullHandler())
 		self._logger.setLevel(DEBUG)
-		While_Toplevel = tk.Toplevel(root)
+		self.master = master
+		self.root = self.master.root
+		self.text = self.master.Text_Edit_BOX
+		While_Toplevel = tk.Toplevel(self.root)
 		While_Toplevel.configure(height=200, width=200)
 		While_Toplevel.geometry("400x200")
 		While_Toplevel.maxsize(400, 200)
 		While_Toplevel.minsize(400, 200)
-		While_Toplevel.title("Code_Editor_Dialog_While")
+		While_Toplevel.title("PCE_While")
 		While_Frame = ttk.Frame(While_Toplevel)
 		While_Frame.configure(height=200, width=400)
 		label10 = ttk.Label(While_Frame)
@@ -109,9 +122,11 @@ class WhileDialog:
 		self.mainwindow = While_Toplevel
 
 	def While_Get(self):
-		While_Value = ("        while True:\n            \n            break")
-		pyperclip.copy(While_Value)
-		pyautogui.hotkey('alt', 'f4')
+		txt = ("while True:\n			\n			break\n		")
+		self.text.insert(tk.INSERT, txt)
+		self._logger.debug("Close While Dialog")
+		self.mainwindow.destroy()
+		self.master.WhileD = None
 		
 
 	def run(self):
@@ -127,23 +142,27 @@ class WhileDialog:
 		self.mainwindow.focus_force()
 
 	def destroy(self):
+		self._logger.debug("Close While Dialog")
 		self.mainwindow.destroy()
+		self.master.WhileD = None
 
 	def run(self):
 		self.mainwindow.mainloop()
 
 class DefDialog:
-	def __init__(self, root, menu):
-		_text_ = ""
+	def __init__(self, master, **kw):
 		self._logger = getLogger(__name__)
 		self._logger.addHandler(NullHandler())
 		self._logger.setLevel(DEBUG)
-		Def_Toplevel = tk.Toplevel(root)
+		self.master = master
+		self.root = self.master.root
+		self.text = self.master.Text_Edit_BOX
+		Def_Toplevel = tk.Toplevel(self.root)
 		Def_Toplevel.configure(width=200)
 		Def_Toplevel.geometry("400x200")
 		Def_Toplevel.maxsize(400, 200)
 		Def_Toplevel.minsize(400, 200)
-		Def_Toplevel.title("Code_Editor_Dialog_Def")
+		Def_Toplevel.title("PCE_Def")
 		Def_Frame = ttk.Frame(Def_Toplevel)
 		Def_Frame.configure(height=200, width=400)
 		label9 = ttk.Label(Def_Frame)
@@ -160,7 +179,7 @@ class DefDialog:
 		self.Def_Entry_Value = tk.StringVar()
 		Def_entry.configure(textvariable=self.Def_Entry_Value, justify="center")
 		Def_entry.delete("0", "end")
-		Def_entry.insert(tk.END, _text_)
+		Def_entry.insert(tk.END, "")
 		Def_entry.place(anchor="nw",relwidth=0.7,relx=0.25,rely=0.7,x=0,y=0)
 
 
@@ -180,10 +199,17 @@ class DefDialog:
 
 	def Def_Get(self):
 		self.Def_Entry_Value = self.Def_Entry_Value.get()
-		Def_Value = (
-			f"        def {self.Def_Entry_Value}(self):\n        \n            pass")
-		pyperclip.copy(Def_Value)
-		pyautogui.hotkey('alt', 'f4')
+		txt = (
+			f"def {self.Def_Entry_Value}(self):\n			\n			pass")
+		if self.Def_Entry_Value is "":
+			self._logger.debug("Close Def Dialog")
+			self.mainwindow.destroy()
+			self.master.DefD = None
+		else:
+			self.text.insert(tk.INSERT, txt)
+			self._logger.debug("Close Def Dialog")
+			self.mainwindow.destroy()
+			self.master.DefD = None
 
 	def run(self):
 		self.mainwindow.mainloop()
@@ -198,24 +224,27 @@ class DefDialog:
 		self.mainwindow.focus_force()
 
 	def destroy(self):
+		self._logger.debug("Close Def Dialog")
 		self.mainwindow.destroy()
+		self.master.DefD = None
 
 	def run(self):
 		self.mainwindow.mainloop()
 
 class ForDialog:
-	def __init__(self, root, menu):
-		_text_ = 'counter'
-		text2 = ''
-		_logger = getLogger(__name__)
-		_logger.addHandler(NullHandler())
-		_logger.setLevel(DEBUG)
-		For_Toplevel = tk.Toplevel(root)
+	def __init__(self, master, **kw):
+		self._logger = getLogger(__name__)
+		self._logger.addHandler(NullHandler())
+		self._logger.setLevel(DEBUG)
+		self.master = master
+		self.root = self.master.root
+		self.text = self.master.Text_Edit_BOX
+		For_Toplevel = tk.Toplevel(self.root)
 		For_Toplevel.configure(height=200, width=200)
 		For_Toplevel.geometry("400x200")
 		For_Toplevel.maxsize(400, 200)
 		For_Toplevel.minsize(400, 200)
-		For_Toplevel.title("Code_Editor_Dialog_For")
+		For_Toplevel.title("PCE_For")
 		For_Frame = ttk.Frame(For_Toplevel)
 		For_Frame.configure(height=200, width=400)
 		label11 = ttk.Label(For_Frame)
@@ -235,7 +264,7 @@ class ForDialog:
 		self.For_Entry_Value1 = tk.StringVar()
 		For_Entry.configure(textvariable=self.For_Entry_Value1,justify='center')
 		For_Entry.delete("0", "end")
-		For_Entry.insert(tk.END, _text_)
+		For_Entry.insert(tk.END, "count")
 		For_Entry.place(anchor="nw",relwidth=0.2,relx=0.275,rely=0.7,x=0,y=0)
 
 		label21 = ttk.Label(For_Frame)
@@ -249,7 +278,7 @@ class ForDialog:
 		self.For_Entry_Value2 = tk.StringVar()
 		For_Entry2.configure(textvariable=self.For_Entry_Value2, justify='center')
 		For_Entry2.delete("0", "end")
-		For_Entry2.insert(tk.END, text2)
+		For_Entry2.insert(tk.END, "")
 		For_Entry2.place(anchor="nw",relwidth=0.2,relx=0.75,rely=0.7,x=0,y=0)
 
 		For_Frame.place(anchor="nw", x=0, y=0)
@@ -263,10 +292,17 @@ class ForDialog:
 	def For_Entry_Get(self):
 		For_Entry_Value1 = self.For_Entry_Value1.get()
 		For_Entry_Value2 = self.For_Entry_Value2.get()
-		For_Value = (
-			f"        for {For_Entry_Value1} in range ({For_Entry_Value2}):\n\n    pass")
-		pyperclip.copy(For_Value)
-		pyautogui.hotkey('alt', 'f4')
+		txt = (
+			f"for {For_Entry_Value1} in range ({For_Entry_Value2}):\n			\n			pass")
+		if For_Entry_Value1 is "" or For_Entry_Value2 is "":
+			self._logger.debug("Close For Dialog")
+			self.mainwindow.destroy()
+			self.master.ForD = None
+		else:
+			self.text.insert(tk.INSERT, txt)
+			self._logger.debug("Close For Dialog")
+			self.mainwindow.destroy()
+			self.master.ForD = None
 
 	def bind(self, event, func):
 		self.mainwindow.bind(event, func)
@@ -278,19 +314,24 @@ class ForDialog:
 		self.mainwindow.focus_force()
 
 	def destroy(self):
+		self._logger.debug("Close For Dialog")
 		self.mainwindow.destroy()
+		self.master.ForD = None
 
 class WaitDialog:
-	def __init__(self, root, menu):
-		_text_ = ''
-		_logger = getLogger(__name__)
-		_logger.addHandler(NullHandler())
-		_logger.setLevel(DEBUG)
-		Wait_Toplevel = tk.Toplevel(root)
+	def __init__(self, master, **kw):
+		self._logger = getLogger(__name__)
+		self._logger.addHandler(NullHandler())
+		self._logger.setLevel(DEBUG)
+		self.master = master
+		self.root = self.master.root
+		self.text = self.master.Text_Edit_BOX
+		Wait_Toplevel = tk.Toplevel(self.root)
 		Wait_Toplevel.configure(height=200, width=200)
 		Wait_Toplevel.geometry("400x200")
 		Wait_Toplevel.maxsize(400, 200)
 		Wait_Toplevel.minsize(400, 200)
+		Wait_Toplevel.title("PCE_Wait")
 		frame6 = ttk.Frame(Wait_Toplevel)
 		frame6.configure(height=200, width=400)
 		label25 = ttk.Label(frame6)
@@ -310,7 +351,7 @@ class WaitDialog:
 		self.Wait_Entry_Value = tk.StringVar()
 		Wait_Entry.configure(textvariable=self.Wait_Entry_Value,justify="center")
 		Wait_Entry.delete("0", "end")
-		Wait_Entry.insert(tk.END, _text_)
+		Wait_Entry.insert(tk.END, "")
 		Wait_Entry.place(anchor="nw",relwidth=0.7,relx=0.25,rely=0.7,x=0,y=0)
 
 		button10 = ttk.Button(frame6)
@@ -323,9 +364,16 @@ class WaitDialog:
 
 	def Wait_Entry_Get(self):
 		self.Wait_Entry_Value = self.Wait_Entry_Value.get()
-		Wait_Value = (f"        self.wait({self.Wait_Entry_Value})")
-		pyperclip.copy(Wait_Value)
-		pyautogui.hotkey('alt', 'f4')
+		txt = (f"self.wait({self.Wait_Entry_Value})\n		")
+		if self.Wait_Entry_Value is "":
+			self._logger.debug("Close Wait Dialog")
+			self.mainwindow.destroy()
+			self.master.WaitD = None
+		else:
+			self.text.insert(tk.INSERT, txt)
+			self._logger.debug("Close Wait Dialog")
+			self.mainwindow.destroy()
+			self.master.WaitD = None
 
 	def bind(self, event, func):
 		self.mainwindow.bind(event, func)
@@ -337,21 +385,28 @@ class WaitDialog:
 		self.mainwindow.focus_force()
 
 	def destroy(self):
+		self._logger.debug("Close Wait Dialog")
 		self.mainwindow.destroy()
+		self.master.WaitD = None
 
 	def run(self):
 		self.mainwindow.mainloop()
 
 class TemplateDialog:
-	def __init__(self, root, menu):
-		_logger = getLogger(__name__)
-		_logger.addHandler(NullHandler())
-		_logger.setLevel(DEBUG)
-		Template_Toplevel = tk.Toplevel(root)
+	def __init__(self, master, **kw):
+		self._logger = getLogger(__name__)
+		self._logger.addHandler(NullHandler())
+		self._logger.setLevel(DEBUG)
+		self.master = master
+		self.root = self.master.root
+		self.text = self.master.Text_Edit_BOX
+		Template_Toplevel = tk.Toplevel(self.root)
 		Template_Toplevel.configure(height=200, width=200)
 		Template_Toplevel.geometry("600x300")
 		Template_Toplevel.maxsize(600, 300)
 		Template_Toplevel.minsize(600, 300)
+		Template_Toplevel.title("PCE_Template")
+
 		frame7 = ttk.Frame(Template_Toplevel)
 		frame7.configure(height=300, width=600)
 		label29 = ttk.Label(frame7)
@@ -432,12 +487,14 @@ class TemplateDialog:
 		self.mainwindow = Template_Toplevel
 
 	def Template_PNG_Get(self):
-		# filetype = ["Image file",".png"]
-		self.Template_Path_Entry_value = filedialog.askopenfilename(filetypes=  [("Image file","*.png")])
-		self.Template_Path_Entry_value = self.Template_Path_Entry_value.replace(
-			"C:/PokeCon/Poke-Controller-Modified/SerialController/Template/","")
-		print(self.Template_Path_Entry_value)
-		self.Template_Label.configure( text =f"選択した画像：{self.Template_Path_Entry_value}")
+		current = os.path.abspath("./Template")
+		self.Template_Path_Entry_value = filedialog.askopenfilename(
+			filetypes=[("Image file", "*.png")], initialdir=current)
+		path = current.replace("\\","/")
+		self.Template_Path_Entry_value = self.Template_Path_Entry_value.replace(f"{path}/","")
+		self.Template_Label.configure(text=f"選択した画像：{self.Template_Path_Entry_value}")
+		self.master.mainwindow.focus_force()
+		self.focus_force()
 		
 		 
 
@@ -446,10 +503,17 @@ class TemplateDialog:
 		self.Template_usegray_Entry_Value = self.Template_usegray_Entry_Value.get()
 		self.Template_showvalue_Entry_Value = self.Template_showvalue_Entry_Value.get()
 		self.Template_showposition_Entry_value = self.Template_showposition_Entry_value.get()
-		Template_Value = (
-			f'        if self.isContainTemplate(\n		templatepath = "{self.Template_Path_Entry_value}",\n		threshold = {self.Template_Threshold_Entry_Value},\n		use_gray = {self.Template_usegray_Entry_Value},\n 		show_value = {self.Template_showvalue_Entry_Value},\n 		show_position = {self.Template_showposition_Entry_value}):')
-		pyperclip.copy(Template_Value)
-		pyautogui.hotkey('alt', 'f4')
+		txt = (
+			f'if self.isContainTemplate(\n		templatepath = "{self.Template_Path_Entry_value}",\n		threshold = {self.Template_Threshold_Entry_Value},\n		use_gray = {self.Template_usegray_Entry_Value},\n 		show_value = {self.Template_showvalue_Entry_Value},\n 		show_position = {self.Template_showposition_Entry_value}):\n			')
+		if self.Template_Path_Entry_value is "":
+			self._logger.debug("Close Template Dialog")
+			self.mainwindow.destroy()
+			self.master.TemplateD = None
+		else:
+			self.text.insert(tk.INSERT, txt)
+			self._logger.debug("Close Template Dialog")
+			self.mainwindow.destroy()
+			self.master.TemplateD = None
 
 	def bind(self, event, func):
 		self.mainwindow.bind(event, func)
@@ -461,21 +525,28 @@ class TemplateDialog:
 		self.mainwindow.focus_force()
 
 	def destroy(self):
+		self._logger.debug("Close Template Dialog")
 		self.mainwindow.destroy()
+		self.master.TemplateD = None
 
 	def run(self):
 		self.mainwindow.mainloop()
 
 class TemplatePositonDialog:
-	def __init__(self, root, menu):
-		_logger = getLogger(__name__)
-		_logger.addHandler(NullHandler())
-		_logger.setLevel(DEBUG)
-		Template_Position_Toplevel = tk.Toplevel(root)
+
+	def __init__(self, master, **kw):
+		self._logger = getLogger(__name__)
+		self._logger.addHandler(NullHandler())
+		self._logger.setLevel(DEBUG)
+		self.master = master
+		self.root = self.master.root
+		self.text = self.master.Text_Edit_BOX
+		Template_Position_Toplevel = tk.Toplevel(self.root)
 		Template_Position_Toplevel.configure(height=400, width=600)
 		Template_Position_Toplevel.geometry("600x400")
 		Template_Position_Toplevel.maxsize(600, 400)
 		Template_Position_Toplevel.minsize(600, 400)
+		Template_Position_Toplevel.title("PCE_Template_Path")
 		frame8 = ttk.Frame(Template_Position_Toplevel)
 		frame8.configure(height=400, width=600)
 		
@@ -525,7 +596,7 @@ class TemplatePositonDialog:
 
 
 		button15 = ttk.Button(frame8)
-		self.Template_Path_Entry_value = "test.png"
+		self.Template_Path_Entry_value = ""
 		button15.configure(text='参照', command=self.Template_PNG_Get)
 		button15.place(anchor="nw",relwidth=0.2,relx=0.25,rely=0.575,x=0,y=0)
 
@@ -606,28 +677,36 @@ class TemplatePositonDialog:
 		self.mainwindow = Template_Position_Toplevel
 
 	def Template_PNG_Get(self):
-		# filetype = ["Image file",".png"]
-		self.Template_Path_Entry_value = filedialog.askopenfilename(
-			filetypes=[("Image file", "*.png")],initialdir="/Template")
-		self.Template_Path_Entry_value = self.Template_Path_Entry_value.replace(
-			"C:/PokeCon/Poke-Controller-Modified/SerialController/Template/", "")
-		print(self.Template_Path_Entry_value)
+		current = os.path.abspath("./Template")
+		self.Template_Path_Entry_value = filedialog.askopenfilename(filetypes=[("Image file", "*.png")], initialdir=current)
+		path = current.replace("\\", "/")
+		self.Template_Path_Entry_value = self.Template_Path_Entry_value.replace(f"{path}/", "")
 		self.Template_Position_Label.configure(
 			text=f"選択した画像：{self.Template_Path_Entry_value}")
+		self.focus_force()
+		self.master.mainwindow.focus_force()
 
 	def Template_Position_Entry_Get(self):
 		self.Template_Position_Threshold_Entry_Value = self.Template_Position_Threshold_Entry_Value.get()
 		self.Template_Position_usegray_Entry_Value = self.Template_Position_usegray_Entry_Value.get()
 		self.Template_Position_showvalue_Entry_Value = self.Template_Position_showvalue_Entry_Value.get()
 		self.Template_Position_showposition_Entry_value = self.Template_Position_showposition_Entry_value.get()
-		self.X1 = self.X1.get()
-		self.X2 = self.X2.get()
-		self.Y1 = self.Y1.get()
-		self.Y2 = self.Y2.get()
-		Template_Value = (
-			f'        if self.isContainTemplate(\n		templatepath = "{self.Template_Path_Entry_value}",\n		threshold = {self.Template_Position_Threshold_Entry_Value},\n		use_gray = {self.Template_Position_usegray_Entry_Value},\n 		show_value = {self.Template_Position_showvalue_Entry_Value},\n 		show_position = {self.Template_Position_showposition_Entry_value},\n		crop = [{self.X1},{self.X2},{self.Y1},{self.Y2}]):')
-		pyperclip.copy(Template_Value)
-		pyautogui.hotkey('alt', 'f4')
+		X1 = self.X1.get()
+		X2 = self.X2.get()
+		Y1 = self.Y1.get()
+		Y2 = self.Y2.get()
+		self.master.TAB_Get()
+		txt = (
+			f'if self.isContainTemplate(templatepath = "{self.Template_Path_Entry_value}",threshold = {self.Template_Position_Threshold_Entry_Value},\n		{self.master.tab_val}use_gray = {self.Template_Position_usegray_Entry_Value},show_value = {self.Template_Position_showvalue_Entry_Value},\n 		{self.master.tab_val}show_position = {self.Template_Position_showposition_Entry_value},crop = [{X1},{X2},{Y1},{Y2}]):\n	{self.master.tab_val}')
+		if self.Template_Path_Entry_value is "":
+			self._logger.debug("Close Template Dialog")
+			self.mainwindow.destroy()
+			self.master.TemplatePD = None
+		else:
+			self.text.insert(tk.INSERT, txt)
+			self._logger.debug("Close Template Dialog")
+			self.mainwindow.destroy()
+			self.master.TemplatePD = None
 
 	def bind(self, event, func):
 		self.mainwindow.bind(event, func)
@@ -639,21 +718,27 @@ class TemplatePositonDialog:
 		self.mainwindow.focus_force()
 
 	def destroy(self):
+		self._logger.debug("Close Template Dialog")
 		self.mainwindow.destroy()
+		self.master.TemplatePD = None
 
 	def run(self):
 		self.mainwindow.mainloop()
 
 class LINEtextDialog:
-	def __init__(self, root, menu):
-		_logger = getLogger(__name__)
-		_logger.addHandler(NullHandler())
-		_logger.setLevel(DEBUG)
-		LINEtext_Toplevel = tk.Toplevel(root)
+	def __init__(self, master, **kw):
+		self._logger = getLogger(__name__)
+		self._logger.addHandler(NullHandler())
+		self._logger.setLevel(DEBUG)
+		self.master = master
+		self.root = self.master.root
+		self.text = self.master.Text_Edit_BOX
+		LINEtext_Toplevel = tk.Toplevel(self.root)
 		LINEtext_Toplevel.configure(height=200, width=400)
 		LINEtext_Toplevel.geometry("400x200")
 		LINEtext_Toplevel.maxsize(400, 200)
 		LINEtext_Toplevel.minsize(400, 200)
+		LINEtext_Toplevel.title("PCE_LINEtext")
 		frame9 = ttk.Frame(LINEtext_Toplevel)
 		frame9.configure(height=200, width=400)
 		label52 = ttk.Label(frame9)
@@ -690,9 +775,16 @@ class LINEtextDialog:
 
 	def LINEtext_Entry_Get(self):
 		self.LINEtext_Entry_Value = self.LINEtext_Entry_Value.get()
-		LINEtext_Value = (f'        self.LINE_text("{self.LINEtext_Entry_Value}")')
-		pyperclip.copy(LINEtext_Value)
-		pyautogui.hotkey('alt', 'f4')
+		txt = (f'self.LINE_text("{self.LINEtext_Entry_Value}")\n			')
+		if self.LINEtext_Entry_Value is "":
+			self._logger.debug("Close LINEimage Dialog")
+			self.mainwindow.destroy()
+			self.master.LINEtextD = None
+		else:
+			self.text.insert(tk.INSERT, txt)
+			self._logger.debug("Close LINEimage Dialog")
+			self.mainwindow.destroy()
+			self.master.LINEtextD = None
 
 	def bind(self, event, func):
 		self.mainwindow.bind(event, func)
@@ -704,21 +796,27 @@ class LINEtextDialog:
 		self.mainwindow.focus_force()
 
 	def destroy(self):
+		self._logger.debug("Close LINEimage Dialog")
 		self.mainwindow.destroy()
+		self.master.LINEtextD = None
 
 	def run(self):
 		self.mainwindow.mainloop()
 
 class LINEimageDialog:
-	def __init__(self, root, menu):
-		_logger = getLogger(__name__)
-		_logger.addHandler(NullHandler())
-		_logger.setLevel(DEBUG)
-		LINE_image_Toplevel = tk.Toplevel(root)
+	def __init__(self, master, **kw):
+		self._logger = getLogger(__name__)
+		self._logger.addHandler(NullHandler())
+		self._logger.setLevel(DEBUG)
+		self.master = master
+		self.root = self.master.root
+		self.text = self.master.Text_Edit_BOX
+		LINE_image_Toplevel = tk.Toplevel(self.root)
 		LINE_image_Toplevel.configure(height=200, width=400)
 		LINE_image_Toplevel.geometry("400x200")
 		LINE_image_Toplevel.maxsize(400, 200)
 		LINE_image_Toplevel.minsize(400, 200)
+		LINE_image_Toplevel.title("PCE_LINEimage")
 		label57 = ttk.Label(LINE_image_Toplevel)
 		label57.configure(anchor="center",background="#00ffff",text='LINE_image')
 		label57.place(relheight=0.1,relwidth=0.2,relx=0.05,rely=0.05,x=0,y=0)
@@ -751,9 +849,17 @@ class LINEimageDialog:
 
 	def LINEimage_Entry_Get(self):
 		self.LINEimage_Entry_Value = self.LINEimage_Entry_Value.get()
-		LINEimage_Value = (f'self.LINE_image("{self.LINEimage_Entry_Value}")')
-		pyperclip.copy(LINEimage_Value)
-		pyautogui.hotkey('alt', 'f4')
+		txt = (f'self.LINE_image("{self.LINEimage_Entry_Value}")\n			')
+		if self.LINEimage_Entry_Value is "":
+			self._logger.debug("Close LINEimage Dialog")
+			self.mainwindow.destroy()
+			self.master.LINEimageD = None
+		else:
+			self.text.insert(tk.INSERT, txt)
+			self._logger.debug("Close LINEimage Dialog")
+			self.mainwindow.destroy()
+			self.master.LINEimageD = None
+		
 
 	def bind(self, event, func):
 		self.mainwindow.bind(event, func)
@@ -765,22 +871,28 @@ class LINEimageDialog:
 		self.mainwindow.focus_force()
 
 	def destroy(self):
+		self._logger.debug("Close LINEimage Dialog")
 		self.mainwindow.destroy()
+		self.master.LINEimageD = None
 
 	def run(self):
 		self.mainwindow.mainloop()
 
 
 class CommentDialog:
-	def __init__(self, root, menu):
-		_logger = getLogger(__name__)
-		_logger.addHandler(NullHandler())
-		_logger.setLevel(DEBUG)
-		Comment_Toplevel = tk.Toplevel(root)
+	def __init__(self, master, **kw):
+		self._logger = getLogger(__name__)
+		self._logger.addHandler(NullHandler())
+		self._logger.setLevel(DEBUG)
+		self.master = master
+		self.root = self.master.root
+		self.text = self.master.Text_Edit_BOX
+		Comment_Toplevel = tk.Toplevel(self.root)
 		Comment_Toplevel.configure(height=200, width=200)
 		Comment_Toplevel.geometry("400x200")
 		Comment_Toplevel.maxsize(400, 200)
 		Comment_Toplevel.minsize(400, 200)
+		Comment_Toplevel.title("PCE_Comment")
 		frame1 = ttk.Frame(Comment_Toplevel)
 		frame1.configure(height=200, width=400)
 		label5 = ttk.Label(frame1)
@@ -812,13 +924,22 @@ class CommentDialog:
 		# Main widget
 		self.mainwindow = Comment_Toplevel
 
-	
+	def Tab_val(self,tab):
+		self.tab_value = tab
 
 	def Comment_Entry_Get(self):
 		self.Comment_Entry_Value = self.Comment_Entry_Value.get()
-		Comment_Value = (f'        # {self.Comment_Entry_Value}')
-		pyperclip.copy(Comment_Value)
-		pyautogui.hotkey('alt', 'f4')
+		txt = (f'# {self.Comment_Entry_Value}\n		')
+		if self.Comment_Entry_Value is "":
+			self._logger.debug("Close Comment Dialog")
+			self.mainwindow.destroy()
+			self.master.CommentD = None
+		else:
+			self.text.insert(tk.INSERT, txt)
+			self._logger.debug("Close Comment Dialog")
+			self.mainwindow.destroy()
+			self.master.CommentD = None
+
 
 	def bind(self, event, func):
 		self.mainwindow.bind(event, func)
@@ -830,21 +951,28 @@ class CommentDialog:
 		self.mainwindow.focus_force()
 
 	def destroy(self):
+		self._logger.debug("Close Comment Dialog")
 		self.mainwindow.destroy()
+		self.master.CommentD = None
 
 	def run(self):
 		self.mainwindow.mainloop()
 
 class NewFileDialog:
-	def __init__(self, root, menu):
-		_logger = getLogger(__name__)
-		_logger.addHandler(NullHandler())
-		_logger.setLevel(DEBUG)
-		NewFile_Toplevel = tk.Toplevel(root)
+	def __init__(self, master, **kw):
+		self._logger = getLogger(__name__)
+		self._logger.addHandler(NullHandler())
+		self._logger.setLevel(DEBUG)
+		self.master = master
+		self.root = self.master.root
+		self.text = self.master.Text_Edit_BOX
+		self.Body = self.master.Body
+		NewFile_Toplevel = tk.Toplevel(self.root)
 		NewFile_Toplevel.configure(height=200, relief="raised", width=400)
 		NewFile_Toplevel.geometry("400x200")
 		NewFile_Toplevel.maxsize(400, 200)
 		NewFile_Toplevel.minsize(400, 200)
+		NewFile_Toplevel.title("PCE_NewFile")
 		frame3 = ttk.Frame(NewFile_Toplevel)
 		frame3.configure(height=200, width=400)
 		label35 = ttk.Label(frame3)
@@ -854,7 +982,7 @@ class NewFileDialog:
 		label36.configure(anchor="center", text='新規作成')
 		label36.place(relwidth=0.7, relx=0.25, rely=0.05, x=0, y=0)
 		label37 = ttk.Label(frame3)
-		label37.configure(anchor="center",text='class名のみ決めてください。\n\nファイルは保存しなければ消えてしまいます。')
+		label37.configure(anchor="center",text='class名を決めてください。\n\nファイルは保存しなければ消えてしまいます。')
 		label37.place(relheight=0.3,relwidth=0.9,relx=0.05,rely=0.2,x=0,y=0)
 		label38 = ttk.Label(frame3)
 		label38.configure(anchor="center",background="#00ffff",text='class')
@@ -879,11 +1007,23 @@ class NewFileDialog:
 		self.mainwindow.mainloop()
 
 	def NeWFile_Entry_Get(self):
-		self.NewFile_Entry_Value = self.NewFile_Entry_Value.get()
-		NewFile_Value = (
-			f'# !/usr/bin/env python3\n# -*- coding: utf-8 -*-\nfrom Commands.PythonCommandBase import PythonCommand, ImageProcPythonCommand\nfrom Commands.Keys import KeyPress, Button, Hat, Direction, Stick\n\nclass {self.NewFile_Entry_Value}(ImageProcPythonCommand): \n    NAME="{self.NewFile_Entry_Value}"\n\n    def __init__(self, cam): \n        super().__init__(cam)\n\n    def do(self): \n\n        #　ここに追加してください\n\n\n\n\n\n\n\n\n        pass ')
-		pyperclip.copy(NewFile_Value)
-		pyautogui.hotkey('alt', 'f4')
+		NewFile_Entry_Value = self.NewFile_Entry_Value.get()
+		a = '# !/usr/bin/env python3\n# -*- coding: utf-8 -*-\nfrom Commands.PythonCommandBase import PythonCommand, ImageProcPythonCommand\nfrom Commands.Keys import KeyPress, Button, Hat, Direction, Stick'
+		b = f'\n\nclass {NewFile_Entry_Value}(ImageProcPythonCommand): \n	NAME="{NewFile_Entry_Value}"\n\n	def __init__(self, cam): \n		super().__init__(cam)'
+		c = f'\n\n	def do(self): \n		\n		# ここに追加してください\n\n		pass'
+		txt = (f"{a}{b}{c}")
+		if NewFile_Entry_Value is "":
+			self._logger.debug("Close NewFile Dialog")
+			self.mainwindow.destroy()
+			self.master.NewFileD = None
+		else:
+			self.text.delete("1.0", "end")
+			self.text.insert(tk.END, txt)
+			self.master.new_insert()
+			self.Body.title(f'Pokecon_Code_Editor:{NewFile_Entry_Value}.py')
+			self._logger.debug("Close NewFile Dialog")
+			self.mainwindow.destroy()
+			self.master.NewFileD = None
 
 	def bind(self, event, func):
 		self.mainwindow.bind(event, func)
@@ -895,7 +1035,7 @@ class NewFileDialog:
 		self.mainwindow.focus_force()
 
 	def destroy(self):
+		self._logger.debug("Close NewFile Dialog")
 		self.mainwindow.destroy()
+		self.master.NewFileD = None
 
-	def run(self):
-		self.mainwindow.mainloop()
